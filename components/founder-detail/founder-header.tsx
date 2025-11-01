@@ -41,7 +41,7 @@ export function FounderHeader({
           <FounderAvatar
             username={username}
             profileImageUrl={profileImageUrl}
-            size="md"
+            size="lg"
           />
         </div>
 
