@@ -1,23 +1,36 @@
-import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
-import { getStartupBySlug } from "@/app/actions/startup-detail.actions";
+import { ImageResponse } from "next/og";
+
+// Use Node.js runtime for database access
+export const runtime = "nodejs";
 
 export async function GET(
-  req: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
 
-    // Fetch startup data
-    const startupResult = await getStartupBySlug(slug);
+    // Dynamic import to avoid bundling issues
+    const { prisma } = await import("@/lib/prisma");
+    const { fetchStripeMetrics } = await import("@/lib/stripe-client");
 
-    if (!startupResult.success || !startupResult.data) {
+    // Fetch startup data directly
+    const startup = await prisma.startup.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        logo: true,
+        website: true,
+        apiKey: true,
+      },
+    });
+
+    if (!startup) {
       return new Response("Startup not found", { status: 404 });
     }
 
-    const startup = startupResult.data;
-    const metrics = startup.metrics;
+    // Fetch metrics
+    const metrics = await fetchStripeMetrics(startup.apiKey);
 
     // Format revenue
     const formatRevenue = (amount: number, currency: string) => {

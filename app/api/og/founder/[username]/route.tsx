@@ -1,41 +1,90 @@
-import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
-import {
-  getFounderByUsername,
-  getFounderAggregatedMetrics,
-} from "@/app/actions/founder-detail.actions";
+import { ImageResponse } from "next/og";
+
+// Use Node.js runtime for database access
+export const runtime = "nodejs";
 
 export async function GET(
-  req: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ username: string }> }
 ) {
   try {
     const { username } = await params;
 
-    // Fetch founder data
-    const founderResult = await getFounderByUsername(username);
+    // Dynamic import to avoid bundling issues
+    const { prisma } = await import("@/lib/prisma");
+    const { fetchStripeMetrics } = await import("@/lib/stripe-client");
 
-    if (!founderResult.success || !founderResult.data) {
+    // Fetch founder data directly
+    const founder = await prisma.founder.findFirst({
+      where: {
+        x_username: {
+          equals: username,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        x_username: true,
+        profileImageUrl: true,
+        displayName: true,
+      },
+    });
+
+    if (!founder) {
       return new Response("Founder not found", { status: 404 });
     }
 
-    const founder = founderResult.data;
+    // Get all startups for this founder
+    const startups = await prisma.startup.findMany({
+      where: {
+        founders: {
+          some: {
+            x_username: {
+              equals: username,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+      select: {
+        apiKey: true,
+      },
+    });
 
-    // Get aggregated metrics
-    const aggregatedMetrics = await getFounderAggregatedMetrics(username);
+    // Fetch and aggregate metrics
+    let totalRevenue = 0;
+    let totalMRR = 0;
+    let currency = "USD";
+
+    for (const startup of startups) {
+      try {
+        const metrics = await fetchStripeMetrics(startup.apiKey);
+        if (metrics) {
+          totalRevenue += metrics.totalRevenue;
+          totalMRR += metrics.monthlyRecurringRevenue;
+          if (!currency || currency === "USD") {
+            currency = metrics.currency;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching metrics:", error);
+      }
+    }
+
+    const aggregatedMetrics = {
+      totalRevenue,
+      totalMRR,
+      startupsCount: startups.length,
+      currency: currency.toUpperCase(),
+    };
 
     // Format revenue
-    const formatRevenue = (amount: number, currency: string) => {
+    const formatRevenue = (amount: number, curr: string) => {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: currency || "USD",
+        currency: curr || "USD",
         maximumFractionDigits: 0,
       }).format(amount);
     };
-
-    const totalRevenue = aggregatedMetrics.totalRevenue;
-    const mrr = aggregatedMetrics.totalMRR;
-    const currency = aggregatedMetrics.currency.toUpperCase();
 
     return new ImageResponse(
       (
@@ -140,7 +189,10 @@ export async function GET(
                     color: "#09090b",
                   }}
                 >
-                  {formatRevenue(totalRevenue, currency)}
+                  {formatRevenue(
+                    aggregatedMetrics.totalRevenue,
+                    aggregatedMetrics.currency
+                  )}
                 </div>
               </div>
 
@@ -167,7 +219,10 @@ export async function GET(
                     color: "#09090b",
                   }}
                 >
-                  {formatRevenue(mrr, currency)}
+                  {formatRevenue(
+                    aggregatedMetrics.totalMRR,
+                    aggregatedMetrics.currency
+                  )}
                 </div>
               </div>
             </div>

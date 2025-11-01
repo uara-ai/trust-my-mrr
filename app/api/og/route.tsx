@@ -1,7 +1,6 @@
-import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
+import { ImageResponse } from "next/og";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // For home page, we'll create a simple, clean OG image
     // showing the Trust My MRR branding and tagline
