@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarLeft } from "@/components/ads/sidebar-left";
 import { SidebarRight } from "@/components/ads/sidebar-right";
 import { BuiltBy } from "@/components/built-by";
+import { OpenPanelComponent } from "@openpanel/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,6 +64,12 @@ export default function RootLayout({
           </SidebarInset>
           <SidebarRight />
         </SidebarProvider>
+        <OpenPanelComponent
+          clientId={process.env.NEXT_PUBLIC_OPEN_PANEL_CLIENT_ID!}
+          clientSecret={process.env.OPEN_PANEL_CLIENT_SECRET!}
+          trackScreenViews={true}
+          disabled={process.env.NODE_ENV !== "production"}
+        />
       </body>
     </html>
   );
