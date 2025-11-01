@@ -251,13 +251,38 @@ export async function getStartupAds(startupId: string) {
 }
 
 /**
- * Cancel an ad
+ * Cancel an ad and its Stripe subscription
  */
 export async function cancelAd(adId: string) {
   try {
-    const ad = await prisma.ad.update({
+    const ad = await prisma.ad.findUnique({
+      where: { id: adId },
+    });
+
+    if (!ad) {
+      return {
+        success: false,
+        error: "Ad not found",
+      };
+    }
+
+    // Cancel the Stripe subscription if it exists
+    if (ad.stripeSubscriptionId) {
+      const { stripe } = await import("@/lib/stripe");
+      try {
+        await stripe.subscriptions.update(ad.stripeSubscriptionId, {
+          cancel_at_period_end: true,
+        });
+      } catch (stripeError) {
+        console.error("Failed to cancel Stripe subscription:", stripeError);
+        // Continue with local cancellation even if Stripe fails
+      }
+    }
+
+    const updatedAd = await prisma.ad.update({
       where: { id: adId },
       data: {
+        cancelAtPeriodEnd: true,
         status: "cancelled",
       },
     });
@@ -266,13 +291,127 @@ export async function cancelAd(adId: string) {
 
     return {
       success: true,
-      ad,
+      ad: updatedAd,
     };
   } catch (error) {
     console.error("Failed to cancel ad:", error);
     return {
       success: false,
       error: "Failed to cancel ad",
+    };
+  }
+}
+
+/**
+ * Immediately cancel an ad subscription (don't wait for period end)
+ */
+export async function cancelAdImmediately(adId: string) {
+  try {
+    const ad = await prisma.ad.findUnique({
+      where: { id: adId },
+    });
+
+    if (!ad) {
+      return {
+        success: false,
+        error: "Ad not found",
+      };
+    }
+
+    // Cancel the Stripe subscription immediately
+    if (ad.stripeSubscriptionId) {
+      const { stripe } = await import("@/lib/stripe");
+      try {
+        await stripe.subscriptions.cancel(ad.stripeSubscriptionId);
+      } catch (stripeError) {
+        console.error("Failed to cancel Stripe subscription:", stripeError);
+        return {
+          success: false,
+          error: "Failed to cancel subscription with Stripe",
+        };
+      }
+    }
+
+    const updatedAd = await prisma.ad.update({
+      where: { id: adId },
+      data: {
+        status: "cancelled",
+        subscriptionStatus: "canceled",
+      },
+    });
+
+    revalidatePath("/");
+
+    return {
+      success: true,
+      ad: updatedAd,
+    };
+  } catch (error) {
+    console.error("Failed to cancel ad immediately:", error);
+    return {
+      success: false,
+      error: "Failed to cancel ad",
+    };
+  }
+}
+
+/**
+ * Reactivate a cancelled subscription (before period ends)
+ */
+export async function reactivateAdSubscription(adId: string) {
+  try {
+    const ad = await prisma.ad.findUnique({
+      where: { id: adId },
+    });
+
+    if (!ad || !ad.stripeSubscriptionId) {
+      return {
+        success: false,
+        error: "Ad or subscription not found",
+      };
+    }
+
+    if (!ad.cancelAtPeriodEnd) {
+      return {
+        success: false,
+        error: "Subscription is not scheduled for cancellation",
+      };
+    }
+
+    // Reactivate the Stripe subscription
+    const { stripe } = await import("@/lib/stripe");
+    try {
+      await stripe.subscriptions.update(ad.stripeSubscriptionId, {
+        cancel_at_period_end: false,
+      });
+    } catch (stripeError) {
+      console.error("Failed to reactivate Stripe subscription:", stripeError);
+      return {
+        success: false,
+        error: "Failed to reactivate subscription with Stripe",
+      };
+    }
+
+    const updatedAd = await prisma.ad.update({
+      where: { id: adId },
+      data: {
+        cancelAtPeriodEnd: false,
+        status: "active",
+        subscriptionStatus: "active",
+      },
+    });
+
+    revalidatePath("/");
+
+    return {
+      success: true,
+      ad: updatedAd,
+    };
+  } catch (error) {
+    console.error("Failed to reactivate subscription:", error);
+    return {
+      success: false,
+      error: "Failed to reactivate subscription",
     };
   }
 }
@@ -346,6 +485,7 @@ export async function getAdBySessionId(sessionId: string) {
 
 /**
  * Update ad with startup and tagline (after successful payment)
+ * Also fetches and stores all Stripe data from the session
  */
 export async function updateAdWithStartup({
   sessionId,
@@ -371,14 +511,126 @@ export async function updateAdWithStartup({
       };
     }
 
-    // Update the ad with startup info and set to active
+    // Fetch Stripe session data to get customer ID, subscription ID, etc.
+    const { stripe } = await import("@/lib/stripe");
+
+    let stripeData: {
+      stripeCustomerId?: string;
+      stripeSubscriptionId?: string;
+      stripePaymentId?: string;
+      subscriptionStatus?: string;
+      currentPeriodStart?: Date;
+      currentPeriodEnd?: Date;
+      cancelAtPeriodEnd?: boolean;
+    } = {};
+
+    try {
+      // Fetch the checkout session
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      console.log("Stripe session retrieved:", {
+        customer: session.customer,
+        subscription: session.subscription,
+        payment_intent: session.payment_intent,
+      });
+
+      if (session.customer) {
+        stripeData.stripeCustomerId = session.customer as string;
+      }
+      if (session.subscription) {
+        stripeData.stripeSubscriptionId = session.subscription as string;
+      }
+      if (session.payment_intent) {
+        stripeData.stripePaymentId = session.payment_intent as string;
+      }
+
+      // Fetch subscription details if subscription exists
+      if (session.subscription) {
+        const subscription = await stripe.subscriptions.retrieve(
+          session.subscription as string
+        );
+
+        console.log("Stripe subscription retrieved:", {
+          status: subscription.status,
+          current_period_start: (subscription as any).current_period_start,
+          current_period_end: (subscription as any).current_period_end,
+          cancel_at_period_end: (subscription as any).cancel_at_period_end,
+        });
+
+        stripeData.subscriptionStatus = subscription.status;
+
+        // Safely extract subscription period dates
+        const subData = subscription as any;
+        if (
+          subData.current_period_start &&
+          typeof subData.current_period_start === "number"
+        ) {
+          stripeData.currentPeriodStart = new Date(
+            subData.current_period_start * 1000
+          );
+        }
+        if (
+          subData.current_period_end &&
+          typeof subData.current_period_end === "number"
+        ) {
+          stripeData.currentPeriodEnd = new Date(
+            subData.current_period_end * 1000
+          );
+        }
+        if (typeof subData.cancel_at_period_end === "boolean") {
+          stripeData.cancelAtPeriodEnd = subData.cancel_at_period_end;
+        }
+      }
+
+      console.log("Final stripeData to be saved:", stripeData);
+    } catch (stripeError) {
+      console.error("Failed to fetch Stripe data:", stripeError);
+      // Continue with update even if Stripe fetch fails
+      // The webhook will update this data later
+    }
+
+    // Update the ad with startup info, tagline, and all Stripe data
+    // Filter out undefined values from stripeData
+    const updateData: any = {
+      startupId,
+      tagline,
+      status: "active",
+    };
+
+    // Only add Stripe fields if they have valid values
+    if (stripeData.stripeCustomerId) {
+      updateData.stripeCustomerId = stripeData.stripeCustomerId;
+    }
+    if (stripeData.stripeSubscriptionId) {
+      updateData.stripeSubscriptionId = stripeData.stripeSubscriptionId;
+    }
+    if (stripeData.stripePaymentId) {
+      updateData.stripePaymentId = stripeData.stripePaymentId;
+    }
+    if (stripeData.subscriptionStatus) {
+      updateData.subscriptionStatus = stripeData.subscriptionStatus;
+    }
+    if (
+      stripeData.currentPeriodStart instanceof Date &&
+      !isNaN(stripeData.currentPeriodStart.getTime())
+    ) {
+      updateData.currentPeriodStart = stripeData.currentPeriodStart;
+    }
+    if (
+      stripeData.currentPeriodEnd instanceof Date &&
+      !isNaN(stripeData.currentPeriodEnd.getTime())
+    ) {
+      updateData.currentPeriodEnd = stripeData.currentPeriodEnd;
+    }
+    if (typeof stripeData.cancelAtPeriodEnd === "boolean") {
+      updateData.cancelAtPeriodEnd = stripeData.cancelAtPeriodEnd;
+    }
+
+    console.log("Final update data:", updateData);
+
     const ad = await prisma.ad.update({
       where: { id: existingAd.id },
-      data: {
-        startupId,
-        tagline,
-        status: "active",
-      },
+      data: updateData,
       include: {
         startup: true,
       },
@@ -428,6 +680,67 @@ export async function getAllStartupsForSelection() {
       success: false,
       error: "Failed to fetch startups",
       startups: [],
+    };
+  }
+}
+
+/**
+ * Get subscription details for an ad
+ */
+export async function getAdSubscriptionDetails(adId: string) {
+  try {
+    const ad = await prisma.ad.findUnique({
+      where: { id: adId },
+      include: {
+        startup: true,
+      },
+    });
+
+    if (!ad || !ad.stripeSubscriptionId) {
+      return {
+        success: false,
+        error: "Ad or subscription not found",
+      };
+    }
+  } catch (error) {
+    console.error("Failed to get subscription details:", error);
+    return {
+      success: false,
+      error: "Failed to get subscription details",
+    };
+  }
+}
+
+/**
+ * Update ad tagline
+ */
+export async function updateAdTagline({
+  adId,
+  tagline,
+}: {
+  adId: string;
+  tagline: string;
+}) {
+  try {
+    const ad = await prisma.ad.update({
+      where: { id: adId },
+      data: { tagline },
+      include: {
+        startup: true,
+      },
+    });
+
+    revalidatePath("/");
+
+    return {
+      success: true,
+      ad,
+    };
+  } catch (error) {
+    console.error("Failed to update tagline:", error);
+    return {
+      success: false,
+      error: "Failed to update tagline",
     };
   }
 }

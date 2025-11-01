@@ -45,24 +45,33 @@ model Founder {
 }
 
 model Ad {
-  id              String   @id @default(cuid())
-  spotId          String   @db.VarChar(255)
-  startupId       String
-  startup         Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
-  tagline         String?  @db.VarChar(255)
-  stripePaymentId String?  @db.VarChar(255)
-  stripeSessionId String?  @db.VarChar(255)
-  status          String   @default("pending") @db.VarChar(50) // pending, active, expired, cancelled
-  startsAt        DateTime @db.Timestamptz(3)
-  expiresAt       DateTime @db.Timestamptz(3)
-  createdAt       DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  id                   String    @id @default(cuid())
+  spotId               String    @db.VarChar(255)
+  startupId            String
+  startup              Startup   @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  tagline              String?   @db.VarChar(255)
+  stripePaymentId      String?   @db.VarChar(255)
+  stripeSessionId      String?   @db.VarChar(255)
+  stripeSubscriptionId String?   @unique @db.VarChar(255)
+  stripeCustomerId     String?   @db.VarChar(255)
+  stripePriceId        String?   @db.VarChar(255)
+  status               String    @default("pending") @db.VarChar(50) // pending, active, expired, cancelled, payment_failed
+  subscriptionStatus   String?   @db.VarChar(50) // active, canceled, past_due, unpaid, incomplete, incomplete_expired, trialing
+  startsAt             DateTime  @db.Timestamptz(3)
+  expiresAt            DateTime  @db.Timestamptz(3)
+  currentPeriodStart   DateTime? @db.Timestamptz(3)
+  currentPeriodEnd     DateTime? @db.Timestamptz(3)
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime  @updatedAt @db.Timestamptz(3)
 
   @@unique([spotId, startupId, startsAt])
   @@index([spotId])
   @@index([startupId])
   @@index([status])
   @@index([expiresAt])
+  @@index([stripeSubscriptionId])
+  @@index([stripeCustomerId])
   @@index([spotId, status, expiresAt])
   @@map("ads")
 }

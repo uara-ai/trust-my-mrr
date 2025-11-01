@@ -28,11 +28,25 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: "subscription",
-      success_url: `${baseUrl}?ad_purchase=success&session_id={CHECKOUT_SESSION_ID}&spot_id=${spotId}`,
-      cancel_url: `${baseUrl}?ad_purchase=cancelled`,
+      // Success URL: Stripe only supports {CHECKOUT_SESSION_ID} substitution
+      // All other data (customer_id, subscription_id, etc.) must be fetched
+      // using the session_id from Stripe API or webhook
+      success_url: `${baseUrl}?ad_purchase=success&session_id={CHECKOUT_SESSION_ID}&spot_id=${spotId}&price_id=${stripePriceId}`,
+      cancel_url: `${baseUrl}?ad_purchase=cancelled&spot_id=${spotId}`,
+      // Metadata is crucial: it's returned in webhooks and when fetching the session
+      // This is how we'll link the payment to the correct ad spot and get all needed data
       metadata: {
         spotId,
+        stripePriceId,
         type: "ad_purchase",
+        // The session will contain: customer_id, subscription_id, payment_intent
+        // which are needed to populate the Ad model fields:
+        // - stripeCustomerId
+        // - stripeSubscriptionId
+        // - stripePaymentId
+        // - currentPeriodStart
+        // - currentPeriodEnd
+        // - subscriptionStatus
       },
     });
 
@@ -52,6 +66,7 @@ export async function POST(request: NextRequest) {
           spotId,
           startupId: tempStartup.id, // Temporary - will be updated
           stripeSessionId: session.id,
+          stripePriceId: stripePriceId,
           status: "pending",
           startsAt: now,
           expiresAt,

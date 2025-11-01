@@ -8,13 +8,19 @@ export function AdPurchaseSuccessWrapper() {
   const searchParams = useSearchParams();
   const [showSuccess, setShowSuccess] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [spotId, setSpotId] = useState<string | null>(null);
+  const [priceId, setPriceId] = useState<string | null>(null);
 
   useEffect(() => {
     const adPurchase = searchParams.get("ad_purchase");
     const session = searchParams.get("session_id");
+    const spot = searchParams.get("spot_id");
+    const price = searchParams.get("price_id");
 
     if (adPurchase === "success" && session) {
       setSessionId(session);
+      setSpotId(spot);
+      setPriceId(price);
       setShowSuccess(true);
     }
   }, [searchParams]);
@@ -26,6 +32,8 @@ export function AdPurchaseSuccessWrapper() {
   return (
     <AdPurchaseSuccess
       sessionId={sessionId}
+      spotId={spotId}
+      priceId={priceId}
       onClose={() => setShowSuccess(false)}
     />
   );

@@ -17,6 +17,8 @@ import { AdStartupSelector } from "./ad-startup-selector";
 
 interface AdPurchaseSuccessProps {
   sessionId: string;
+  spotId?: string | null;
+  priceId?: string | null;
   onClose: () => void;
 }
 
