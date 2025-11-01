@@ -17,7 +17,7 @@ export function Logo({
   return (
     <Link href={href} className="flex items-center gap-2">
       <Image src={src} alt={alt} width={width} height={height} />
-      <span className="text-sm font-bold">TrustMyMRR</span>
+      <span className="text-sm font-bold">Trust My MRR</span>
     </Link>
   );
 }

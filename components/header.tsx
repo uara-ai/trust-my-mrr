@@ -3,8 +3,8 @@ import { Logo } from "@/components/logo";
 
 export function Header() {
   return (
-    <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2">
-      <nav className="w-full px-4 lg:px-6 h-16 flex items-center justify-between">
+    <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 py-12 mb-2">
+      <nav className="w-full px-4 lg:px-6 h-16 flex items-center justify-center">
         {/* Logo */}
 
         <Logo

@@ -29,7 +29,7 @@ export default async function FounderPage({ params }: FounderPageProps) {
   const aggregatedMetrics = await getFounderAggregatedMetrics(username);
 
   return (
-    <div className="container mx-auto py-10 space-y-8">
+    <div className="container mx-auto space-y-8">
       {/* Header with founder info */}
       <FounderHeader
         username={founder.x_username}

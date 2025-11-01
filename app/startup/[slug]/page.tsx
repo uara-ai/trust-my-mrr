@@ -64,7 +64,7 @@ export default async function StartupPage({ params }: StartupPageProps) {
   const totalStartups = sortedByRevenue.length;
 
   return (
-    <div className="container mx-auto py-10 space-y-8">
+    <div className="container mx-auto space-y-8">
       {/* Header with startup info */}
       <StartupHeader
         name={startup.name}
