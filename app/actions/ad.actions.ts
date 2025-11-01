@@ -3,6 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { AdContent } from "@/types/ads";
+import {
+  getCurrentAdPrice,
+  getNextAdPrice,
+  getDynamicPricingConfig,
+} from "@/lib/ads";
 
 /**
  * Get all active ads
@@ -741,6 +746,30 @@ export async function updateAdTagline({
     return {
       success: false,
       error: "Failed to update tagline",
+    };
+  }
+}
+
+/**
+ * Get current dynamic pricing information
+ */
+export async function getCurrentPricing() {
+  try {
+    const currentPrice = await getCurrentAdPrice();
+    const nextPrice = await getNextAdPrice();
+    const config = getDynamicPricingConfig();
+
+    return {
+      success: true,
+      currentPrice,
+      nextPrice,
+      config,
+    };
+  } catch (error) {
+    console.error("Failed to get pricing:", error);
+    return {
+      success: false,
+      error: "Failed to get pricing information",
     };
   }
 }

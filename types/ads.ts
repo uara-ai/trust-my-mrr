@@ -1,15 +1,32 @@
-export type AdSize = "small" | "medium" | "large" | "banner";
+export type AdSize =
+  | "xsmall"
+  | "small"
+  | "medium"
+  | "large"
+  | "xlarge"
+  | "banner";
+
+export interface DynamicPricing {
+  enabled: boolean;
+  startPrice: number;
+  maxPrice: number;
+  priceIncrement: number;
+  singleStripePriceId: string;
+}
 
 export interface AdSpot {
   id: string;
   size: AdSize;
   position: "top" | "right" | "bottom" | "left";
-  price: number;
-  stripePriceId?: string; // Stripe price ID for payment
   dimensions: {
     width: string;
     height: string;
   };
+}
+
+export interface AdSpotWithPrice extends AdSpot {
+  price: number;
+  stripePriceId: string;
 }
 
 export interface AdContent {
@@ -27,6 +44,6 @@ export interface AdContent {
 }
 
 export interface AdCardData {
-  spot: AdSpot;
+  spot: AdSpotWithPrice;
   content?: AdContent | null;
 }

@@ -18,7 +18,7 @@ interface AdsRightProps {
 }
 
 export function AdsRight({ ads }: AdsRightProps) {
-  const handleBuyAdSpot = async (spotId: string, stripePriceId: string) => {
+  const handleBuyAdSpot = async (spotId: string) => {
     try {
       const response = await fetch("/api/checkout/ad", {
         method: "POST",
@@ -27,7 +27,6 @@ export function AdsRight({ ads }: AdsRightProps) {
         },
         body: JSON.stringify({
           spotId,
-          stripePriceId,
         }),
       });
 
@@ -77,29 +76,23 @@ export function AdsRight({ ads }: AdsRightProps) {
                   // Available ad spot - Clickable placeholder
                   <MinimalCard
                     variant="default"
-                    onClick={() => {
-                      if (spot.stripePriceId) {
-                        handleBuyAdSpot(spot.id, spot.stripePriceId);
-                      } else {
-                        alert(
-                          "Stripe price ID is not configured for this ad spot"
-                        );
-                      }
-                    }}
+                    onClick={() => handleBuyAdSpot(spot.id)}
                     className="border-dashed border-2 hover:border-primary hover:bg-accent/50 p-4"
                   >
                     <div className="flex flex-col items-center justify-center text-center gap-2">
                       <h4 className="font-semibold text-xs">
                         Your startup here
                       </h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-xs h-7"
-                      >
-                        <IconSpeakerphone className="h-3 w-3" />
-                        Ads here
-                      </Button>
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs h-7"
+                        >
+                          <IconSpeakerphone className="h-3 w-3" />${spot.price}
+                          /mo
+                        </Button>
+                      </div>
                     </div>
                   </MinimalCard>
                 ) : (

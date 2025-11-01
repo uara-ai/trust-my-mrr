@@ -1,29 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { getCurrentAdPrice, getDynamicPricingConfig } from "@/lib/ads";
 
 export async function POST(request: NextRequest) {
   try {
-    const { spotId, stripePriceId } = await request.json();
+    const { spotId } = await request.json();
 
-    if (!spotId || !stripePriceId) {
+    if (!spotId) {
       return NextResponse.json(
-        { error: "Missing required fields: spotId or stripePriceId" },
+        { error: "Missing required field: spotId" },
         { status: 400 }
       );
     }
+
+    // Get current dynamic price
+    const currentPrice = await getCurrentAdPrice();
+    const config = getDynamicPricingConfig();
 
     // Get the base URL from the request or environment
     const baseUrl =
       process.env.NEXT_PUBLIC_URL ||
       `${request.nextUrl.protocol}//${request.nextUrl.host}`;
 
-    // Create Stripe checkout session using existing price ID
+    // Create Stripe checkout session with dynamic pricing
+    // Using price_data to create a one-time price for this checkout
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
-          price: stripePriceId,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "TrustMyMRR Ad Spot",
+              description: `Ad spot placement for ${spotId}`,
+            },
+            unit_amount: currentPrice * 100, // Stripe expects cents
+            recurring: {
+              interval: "month",
+            },
+          },
           quantity: 1,
         },
       ],
@@ -31,14 +47,15 @@ export async function POST(request: NextRequest) {
       // Success URL: Stripe only supports {CHECKOUT_SESSION_ID} substitution
       // All other data (customer_id, subscription_id, etc.) must be fetched
       // using the session_id from Stripe API or webhook
-      success_url: `${baseUrl}?ad_purchase=success&session_id={CHECKOUT_SESSION_ID}&spot_id=${spotId}&price_id=${stripePriceId}`,
+      success_url: `${baseUrl}?ad_purchase=success&session_id={CHECKOUT_SESSION_ID}&spot_id=${spotId}&price=${currentPrice}`,
       cancel_url: `${baseUrl}?ad_purchase=cancelled&spot_id=${spotId}`,
       // Metadata is crucial: it's returned in webhooks and when fetching the session
       // This is how we'll link the payment to the correct ad spot and get all needed data
       metadata: {
         spotId,
-        stripePriceId,
+        price: currentPrice.toString(),
         type: "ad_purchase",
+        dynamicPricing: "true",
         // The session will contain: customer_id, subscription_id, payment_intent
         // which are needed to populate the Ad model fields:
         // - stripeCustomerId
@@ -66,7 +83,7 @@ export async function POST(request: NextRequest) {
           spotId,
           startupId: tempStartup.id, // Temporary - will be updated
           stripeSessionId: session.id,
-          stripePriceId: stripePriceId,
+          stripePriceId: `dynamic_${currentPrice}`, // Store the price used
           status: "pending",
           startsAt: now,
           expiresAt,
@@ -78,6 +95,7 @@ export async function POST(request: NextRequest) {
       success: true,
       sessionId: session.id,
       url: session.url,
+      price: currentPrice,
     });
   } catch (error) {
     console.error("Stripe checkout error:", error);

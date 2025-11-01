@@ -1,11 +1,16 @@
 {
+  "dynamicPricing": {
+    "enabled": true,
+    "startPrice": 99,
+    "maxPrice": 1499,
+    "priceIncrement": 100,
+    "singleStripePriceId": "price_dynamic_ad_spot"
+  },
   "adSpots": [
     {
       "id": "left-1",
       "size": "xlarge",
       "position": "left",
-      "price": 599,
-      "stripePriceId": "price_1SOhCKGgxAsNQLrzgWtIyRCA",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -15,8 +20,6 @@
       "id": "left-2",
       "size": "large",
       "position": "left",
-      "price": 449,
-      "stripePriceId": "price_1SOhCKGgxAsNQLrzgWtIyRCA",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -26,8 +29,6 @@
       "id": "left-3",
       "size": "large",
       "position": "left",
-      "price": 449,
-      "stripePriceId": "price_left_featured_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -37,8 +38,6 @@
       "id": "left-4",
       "size": "medium",
       "position": "left",
-      "price": 299,
-      "stripePriceId": "price_left_premium_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -48,8 +47,6 @@
       "id": "left-5",
       "size": "medium",
       "position": "left",
-      "price": 299,
-      "stripePriceId": "price_left_premium_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -59,8 +56,6 @@
       "id": "left-6",
       "size": "small",
       "position": "left",
-      "price": 179,
-      "stripePriceId": "price_left_standard_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -70,8 +65,6 @@
       "id": "left-7",
       "size": "small",
       "position": "left",
-      "price": 179,
-      "stripePriceId": "price_left_standard_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -81,8 +74,6 @@
       "id": "left-8",
       "size": "xsmall",
       "position": "left",
-      "price": 99,
-      "stripePriceId": "price_left_compact_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -92,8 +83,6 @@
       "id": "left-9",
       "size": "xsmall",
       "position": "left",
-      "price": 99,
-      "stripePriceId": "price_left_compact_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -103,8 +92,6 @@
       "id": "left-10",
       "size": "xsmall",
       "position": "left",
-      "price": 99,
-      "stripePriceId": "price_left_footer",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -114,8 +101,6 @@
       "id": "right-1",
       "size": "xlarge",
       "position": "right",
-      "price": 599,
-      "stripePriceId": "price_right_hero",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -125,8 +110,6 @@
       "id": "right-2",
       "size": "large",
       "position": "right",
-      "price": 449,
-      "stripePriceId": "price_right_featured_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -136,8 +119,6 @@
       "id": "right-3",
       "size": "large",
       "position": "right",
-      "price": 449,
-      "stripePriceId": "price_right_featured_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -147,8 +128,6 @@
       "id": "right-4",
       "size": "medium",
       "position": "right",
-      "price": 299,
-      "stripePriceId": "price_right_premium_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -158,8 +137,6 @@
       "id": "right-5",
       "size": "medium",
       "position": "right",
-      "price": 299,
-      "stripePriceId": "price_right_premium_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -169,8 +146,6 @@
       "id": "right-6",
       "size": "small",
       "position": "right",
-      "price": 179,
-      "stripePriceId": "price_right_standard_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -180,8 +155,6 @@
       "id": "right-7",
       "size": "small",
       "position": "right",
-      "price": 179,
-      "stripePriceId": "price_right_standard_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -191,8 +164,6 @@
       "id": "right-8",
       "size": "xsmall",
       "position": "right",
-      "price": 99,
-      "stripePriceId": "price_right_compact_1",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -202,8 +173,6 @@
       "id": "right-9",
       "size": "xsmall",
       "position": "right",
-      "price": 99,
-      "stripePriceId": "price_right_compact_2",
       "dimensions": {
         "width": "120px",
         "height": "120px"
@@ -213,8 +182,6 @@
       "id": "right-10",
       "size": "xsmall",
       "position": "right",
-      "price": 99,
-      "stripePriceId": "price_right_footer",
       "dimensions": {
         "width": "120px",
         "height": "120px"
