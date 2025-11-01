@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Plus, X, Check, AlertCircle } from "lucide-react";
+import { Loader2, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Form,
   FormControl,
@@ -38,6 +36,7 @@ const startupFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .or(z.literal("https://")),
+  founder: z.string().optional().or(z.literal("")),
 });
 
 type StartupFormValues = z.infer<typeof startupFormSchema>;
@@ -54,8 +53,6 @@ interface BusinessInfo {
 }
 
 export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
-  const [founders, setFounders] = useState<string[]>([]);
-  const [founderInput, setFounderInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isValidatingKey, setIsValidatingKey] = useState(false);
@@ -67,6 +64,7 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
     defaultValues: {
       apiKey: "",
       website: "https://",
+      founder: "",
     },
   });
 
@@ -97,18 +95,6 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
     }
   };
 
-  const addFounder = () => {
-    const trimmed = founderInput.trim().replace("@", "");
-    if (trimmed && !founders.includes(trimmed)) {
-      setFounders([...founders, trimmed]);
-      setFounderInput("");
-    }
-  };
-
-  const removeFounder = (username: string) => {
-    setFounders(founders.filter((f) => f !== username));
-  };
-
   const onSubmit = async (values: StartupFormValues) => {
     if (!businessInfo) {
       setError("Please validate your API key first");
@@ -125,17 +111,21 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
           ? values.website
           : undefined;
 
+      // Clean founder username (remove @ if present)
+      const founderUsername = values.founder
+        ? values.founder.trim().replace("@", "")
+        : undefined;
+
       const input: CreateStartupInput = {
         apiKey: values.apiKey,
         website: websiteValue,
-        founders: founders.length > 0 ? founders : undefined,
+        founders: founderUsername ? [founderUsername] : undefined,
       };
 
       const result = await createStartup(input);
 
       if (result.success) {
         form.reset();
-        setFounders([]);
         setBusinessInfo(null);
         onSuccess?.();
       } else {
@@ -304,50 +294,32 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
           )}
         />
 
-        {/* Founders Section */}
-        <div className="space-y-3">
-          <Label>Founders (X/Twitter Usernames)</Label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="@username"
-              value={founderInput}
-              onChange={(e) => setFounderInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addFounder();
-                }
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={addFounder}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          {founders.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {founders.map((founder) => (
-                <Badge key={founder} variant="secondary" className="gap-1">
-                  @{founder}
-                  <button
-                    type="button"
-                    onClick={() => removeFounder(founder)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
+        {/* Founder Section */}
+        <FormField
+          control={form.control}
+          name="founder"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Founder X/Twitter Username</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="@username"
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow typing @ but store without it
+                    field.onChange(value);
+                  }}
+                />
+              </FormControl>
+              <FormDescription>
+                X/Twitter username of the founder (optional)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
           )}
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Add founder X/Twitter usernames (optional)
-          </p>
-        </div>
+        />
 
         {/* Form Actions */}
         <div className="flex justify-end gap-3">

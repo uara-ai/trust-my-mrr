@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,10 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
         (startup.website ? getGoogleFavicon(startup.website, 40) : null);
 
       return (
-        <div className="flex items-center gap-2 sm:gap-3">
+        <Link
+          href={`/startup/${startup.slug}`}
+          className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
+        >
           {logoUrl ? (
             <img
               src={logoUrl}
@@ -83,18 +87,13 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
               {startup.name}
             </span>
             {startup.website && (
-              <a
-                href={startup.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[10px] sm:text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 flex items-center gap-1 truncate"
-              >
+              <span className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1 truncate">
                 {startup.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                 <ExternalLink className="h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0" />
-              </a>
+              </span>
             )}
           </div>
-        </div>
+        </Link>
       );
     },
   },

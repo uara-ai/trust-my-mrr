@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { fetchStripeMetrics } from "@/lib/stripe-client";
 import { fetchXUserProfile } from "@/lib/x-api";
+import { generateSlugFromWebsiteOrName } from "@/lib/generate-slug";
 import type {
   CreateStartupInput,
   UpdateStartupInput,
@@ -83,6 +84,22 @@ export async function createStartup(input: CreateStartupInput) {
 
     const { name, description, logo } = businessInfoResult.data;
 
+    // Generate slug from website URL (e.g., uara.ai -> uara-ai)
+    // Falls back to name-based slug if no website
+    const slug = generateSlugFromWebsiteOrName(input.website, name);
+
+    // Check if slug already exists
+    const existingStartup = await prisma.startup.findUnique({
+      where: { slug },
+    });
+
+    if (existingStartup) {
+      return {
+        success: false,
+        error: "A startup with this website already exists",
+      };
+    }
+
     // Fetch X profile data for all founders in parallel
     let foundersData: Array<{
       x_username: string;
@@ -106,6 +123,7 @@ export async function createStartup(input: CreateStartupInput) {
     // Create startup with founders in a transaction
     const startup = await prisma.startup.create({
       data: {
+        slug,
         name,
         description,
         logo,

@@ -10,6 +10,7 @@ datasource db {
 
 model Startup {
   id          String    @id @default(cuid())
+  slug        String    @unique @db.VarChar(255)
   name        String    @db.VarChar(255)
   description String?   @db.Text
   logo        String?   @db.VarChar(500)
@@ -19,6 +20,7 @@ model Startup {
   updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
   founders    Founder[]
 
+  @@index([slug])
   @@index([name])
   @@index([createdAt(sort: Desc)])
   @@map("startups")
