@@ -57,6 +57,7 @@
     "sonner": "^2.0.7",
     "stripe": "^19.2.0",
     "tailwind-merge": "^3.3.1",
+    "twitter-api-v2": "^1.27.0",
     "vaul": "^1.1.2",
     "zod": "^4.1.12"
   },

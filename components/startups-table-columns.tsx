@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { StartupWithMetrics } from "@/types/startup";
 import { getGoogleFavicon } from "@/lib/favicon";
+import { FounderAvatar } from "./founder-avatar";
 
 const formatCurrency = (amount: number, currency: string) => {
   return new Intl.NumberFormat("en-US", {
@@ -119,20 +119,17 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
               key={founder.id}
               className="flex items-center gap-1.5 sm:gap-2"
             >
-              <Avatar className="h-5 w-5 sm:h-6 sm:w-6 shrink-0">
-                <AvatarImage
-                  src={`https://unavatar.io/x/${founder.x_username}`}
-                  alt={founder.x_username}
-                />
-                <AvatarFallback className="text-[9px] sm:text-[10px]">
-                  {founder.x_username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <FounderAvatar
+                username={founder.x_username}
+                profileImageUrl={founder.profileImageUrl}
+                size="sm"
+              />
               <a
                 href={`https://x.com/${founder.x_username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs sm:text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 truncate"
+                title={founder.displayName || `@${founder.x_username}`}
               >
                 @{founder.x_username}
               </a>

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { fetchStripeMetrics } from "@/lib/stripe-client";
+import { fetchXUserProfile } from "@/lib/x-api";
 import type {
   CreateStartupInput,
   UpdateStartupInput,
@@ -81,6 +82,26 @@ export async function createStartup(input: CreateStartupInput) {
 
     const { name, description, logo } = businessInfoResult.data;
 
+    // Fetch X profile data for all founders in parallel
+    let foundersData: Array<{
+      x_username: string;
+      profileImageUrl?: string;
+      displayName?: string;
+    }> = [];
+
+    if (input.founders && input.founders.length > 0) {
+      const xProfilePromises = input.founders.map(async (username) => {
+        const profile = await fetchXUserProfile(username);
+        return {
+          x_username: username,
+          profileImageUrl: profile?.profileImageUrl,
+          displayName: profile?.displayName,
+        };
+      });
+
+      foundersData = await Promise.all(xProfilePromises);
+    }
+
     // Create startup with founders in a transaction
     const startup = await prisma.startup.create({
       data: {
@@ -90,11 +111,9 @@ export async function createStartup(input: CreateStartupInput) {
         apiKey: input.apiKey,
         website: input.website,
         founders:
-          input.founders && input.founders.length > 0
+          foundersData.length > 0
             ? {
-                create: input.founders.map((username) => ({
-                  x_username: username,
-                })),
+                create: foundersData,
               }
             : undefined,
       },
@@ -317,9 +336,14 @@ export async function deleteStartup(id: string) {
  */
 export async function addFounder(startupId: string, xUsername: string) {
   try {
+    // Fetch X profile data
+    const profile = await fetchXUserProfile(xUsername);
+
     const founder = await prisma.founder.create({
       data: {
         x_username: xUsername,
+        profileImageUrl: profile?.profileImageUrl,
+        displayName: profile?.displayName,
         startupId,
       },
     });

@@ -25,12 +25,14 @@ model Startup {
 }
 
 model Founder {
-  id        String   @id @default(cuid())
-  x_username      String   @db.VarChar(255)
-  startupId String
-  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id               String   @id @default(cuid())
+  x_username       String   @db.VarChar(255)
+  profileImageUrl  String?  @db.VarChar(500)
+  displayName      String?  @db.VarChar(255)
+  startupId        String
+  startup          Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
 
   @@index([startupId])
   @@index([x_username])

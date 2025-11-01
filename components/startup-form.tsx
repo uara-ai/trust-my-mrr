@@ -32,7 +32,20 @@ const startupFormSchema = z.object({
       /^(rk_|sk_)/,
       "Must be a valid Stripe API key (restricted or secret)"
     ),
-  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  website: z
+    .string()
+    .refine(
+      (val) => {
+        if (!val || val === "") return true;
+        // Allow domain.com or www.domain.com format
+        return /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
+          val
+        );
+      },
+      { message: "Must be a valid domain (e.g., example.com)" }
+    )
+    .optional()
+    .or(z.literal("")),
 });
 
 type StartupFormValues = z.infer<typeof startupFormSchema>;
@@ -116,7 +129,7 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
     try {
       const input: CreateStartupInput = {
         apiKey: values.apiKey,
-        website: values.website || undefined,
+        website: values.website ? `https://${values.website}` : undefined,
         founders: founders.length > 0 ? founders : undefined,
       };
 
@@ -249,11 +262,17 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
             <FormItem>
               <FormLabel>Website</FormLabel>
               <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://example.com"
-                  {...field}
-                />
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400 pointer-events-none">
+                    https://
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="example.com"
+                    {...field}
+                    className="pl-[68px]"
+                  />
+                </div>
               </FormControl>
               <FormDescription>
                 Your startup&apos;s website (optional)
