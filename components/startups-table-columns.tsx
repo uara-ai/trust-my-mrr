@@ -19,14 +19,14 @@ const formatCurrency = (amount: number, currency: string) => {
 export const columns: ColumnDef<StartupWithMetrics>[] = [
   {
     id: "rank",
-    header: () => <div className="text-center">#</div>,
+    header: () => <div className="text-center text-xs sm:text-sm">#</div>,
     cell: ({ row, table }) => {
       // Get the sorted rows to determine rank
       const sortedRows = table.getSortedRowModel().rows;
       const rank = sortedRows.findIndex((r) => r.id === row.id) + 1;
 
       return (
-        <div className="text-center font-medium text-zinc-600 dark:text-zinc-400">
+        <div className="text-center font-medium text-zinc-600 dark:text-zinc-400 text-sm sm:text-base">
           {rank}
         </div>
       );
@@ -55,12 +55,12 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
         (startup.website ? getGoogleFavicon(startup.website, 40) : null);
 
       return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {logoUrl ? (
             <img
               src={logoUrl}
               alt={startup.name}
-              className="h-10 w-10 rounded-lg object-cover border border-zinc-200 dark:border-zinc-800 shrink-0"
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg object-cover border border-zinc-200 dark:border-zinc-800 shrink-0"
               onError={(e) => {
                 // Fallback to initials if image fails to load
                 const target = e.target as HTMLImageElement;
@@ -71,7 +71,7 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
             />
           ) : null}
           <div
-            className="h-10 w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shrink-0 items-center justify-center"
+            className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shrink-0 items-center justify-center"
             style={{ display: logoUrl ? "none" : "flex" }}
           >
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
@@ -79,7 +79,7 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
             </span>
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="font-medium text-zinc-900 dark:text-zinc-50">
+            <span className="font-medium text-zinc-900 dark:text-zinc-50 text-sm sm:text-base">
               {startup.name}
             </span>
             {startup.website && (
@@ -87,10 +87,10 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
                 href={startup.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 flex items-center gap-1 truncate"
+                className="text-[10px] sm:text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 flex items-center gap-1 truncate"
               >
                 {startup.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+                <ExternalLink className="h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0" />
               </a>
             )}
           </div>
@@ -100,26 +100,31 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
   },
   {
     id: "founders",
-    header: () => <div>Founders</div>,
+    header: () => <div className="text-xs sm:text-sm">Founders</div>,
     cell: ({ row }) => {
       const startup = row.original;
 
       if (startup.founders.length === 0) {
         return (
-          <span className="text-sm text-zinc-400 dark:text-zinc-500">—</span>
+          <span className="text-xs sm:text-sm text-zinc-400 dark:text-zinc-500">
+            —
+          </span>
         );
       }
 
       return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5 sm:gap-2">
           {startup.founders.map((founder) => (
-            <div key={founder.id} className="flex items-center gap-2">
-              <Avatar className="h-6 w-6 shrink-0">
+            <div
+              key={founder.id}
+              className="flex items-center gap-1.5 sm:gap-2"
+            >
+              <Avatar className="h-5 w-5 sm:h-6 sm:w-6 shrink-0">
                 <AvatarImage
                   src={`https://unavatar.io/x/${founder.x_username}`}
                   alt={founder.x_username}
                 />
-                <AvatarFallback className="text-[10px]">
+                <AvatarFallback className="text-[9px] sm:text-[10px]">
                   {founder.x_username.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -127,7 +132,7 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
                 href={`https://x.com/${founder.x_username}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+                className="text-xs sm:text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 truncate"
               >
                 @{founder.x_username}
               </a>
@@ -163,7 +168,7 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
         return <span className="text-sm text-zinc-400">Loading...</span>;
       }
       return (
-        <div className="font-semibold text-zinc-900 dark:text-zinc-50">
+        <div className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm sm:text-base whitespace-nowrap">
           {formatCurrency(
             startup.metrics.totalRevenue,
             startup.metrics.currency
@@ -203,7 +208,7 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
         return <span className="text-sm text-zinc-400">Loading...</span>;
       }
       return (
-        <div className="font-semibold text-zinc-900 dark:text-zinc-50">
+        <div className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm sm:text-base whitespace-nowrap">
           {formatCurrency(
             startup.metrics.monthlyRecurringRevenue,
             startup.metrics.currency
