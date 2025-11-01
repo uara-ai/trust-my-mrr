@@ -9,8 +9,8 @@ export async function StartupsPage() {
   return (
     <div className="container mx-auto space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-center">
-        <div className="text-center">
+      <div className="flex items-center justify-center text-center">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Another database of verified startup revenues
           </h1>
