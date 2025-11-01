@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppLayout } from "@/components/app-layout";
-import { getAllAdsGrouped } from "@/lib/ads";
+import { Header } from "@/components/header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarLeft } from "@/components/ads/sidebar-left";
+import { SidebarRight } from "@/components/ads/sidebar-right";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,21 +27,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const ads = getAllAdsGrouped();
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AppLayout
-          topAds={ads.top}
-          rightAds={ads.right}
-          bottomAds={ads.bottom}
-          leftAds={ads.left}
-        >
-          {children}
-        </AppLayout>
+        <SidebarProvider>
+          <SidebarLeft />
+          <SidebarInset>
+            <Header />
+            <div className="px-4 py-0">{children}</div>
+          </SidebarInset>
+          <SidebarRight />
+        </SidebarProvider>
       </body>
     </html>
   );

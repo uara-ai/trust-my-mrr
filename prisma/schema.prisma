@@ -14,11 +14,12 @@ model Startup {
   name        String    @db.VarChar(255)
   description String?   @db.Text
   logo        String?   @db.VarChar(500)
-  apiKey      String    @db.VarChar(255) @unique
+  apiKey      String    @unique @db.VarChar(255)
   website     String?   @db.VarChar(500)
   createdAt   DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
   founders    Founder[]
+  ads         Ad[]
 
   @@index([slug])
   @@index([name])
@@ -27,18 +28,41 @@ model Startup {
 }
 
 model Founder {
-  id               String   @id @default(cuid())
-  x_username       String   @db.VarChar(255)
-  profileImageUrl  String?  @db.VarChar(500)
-  displayName      String?  @db.VarChar(255)
-  startupId        String
-  startup          Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
-  createdAt        DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
+  id              String   @id @default(cuid())
+  x_username      String   @db.VarChar(255)
+  profileImageUrl String?  @db.VarChar(500)
+  displayName     String?  @db.VarChar(255)
+  startupId       String
+  startup         Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
 
   @@index([startupId])
   @@index([x_username])
   @@index([startupId, createdAt(sort: Desc)])
   @@index([createdAt(sort: Desc)])
   @@map("founders")
+}
+
+model Ad {
+  id              String   @id @default(cuid())
+  spotId          String   @db.VarChar(255)
+  startupId       String
+  startup         Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  tagline         String?  @db.VarChar(255)
+  stripePaymentId String?  @db.VarChar(255)
+  stripeSessionId String?  @db.VarChar(255)
+  status          String   @default("pending") @db.VarChar(50) // pending, active, expired, cancelled
+  startsAt        DateTime @db.Timestamptz(3)
+  expiresAt       DateTime @db.Timestamptz(3)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+
+  @@unique([spotId, startupId, startsAt])
+  @@index([spotId])
+  @@index([startupId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([spotId, status, expiresAt])
+  @@map("ads")
 }

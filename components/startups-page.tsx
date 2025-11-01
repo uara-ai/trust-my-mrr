@@ -11,10 +11,9 @@ export async function StartupsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Startups</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-2">
-            Track MRR and revenue metrics from Stripe for all your startups
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            The database of verified startup revenues
+          </h1>
         </div>
         <AddStartupDialog />
       </div>

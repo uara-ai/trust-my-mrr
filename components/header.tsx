@@ -3,22 +3,17 @@ import { Logo } from "@/components/logo";
 
 export function Header() {
   return (
-    <header className="fixed top-4 left-0 right-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
+    <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2">
+      <nav className="w-full px-4 lg:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link
+
+        <Logo
+          src="/logo.png"
+          alt="TrustMyMRR"
+          width={32}
+          height={32}
           href="/"
-          aria-label="TrustMyMRR Home"
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <Logo
-            src="/logo.png"
-            alt="TrustMyMRR"
-            width={32}
-            height={32}
-            href="/"
-          />
-        </Link>
+        />
 
         {/* Navigation Links 
         <div className="flex items-center gap-6">
