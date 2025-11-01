@@ -27,6 +27,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
+import { AddStartupDialog } from "./add-startup-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -85,6 +86,7 @@ export function StartupsDataTable<TData, TValue>({
             className="pl-9"
           />
         </div>
+        <AddStartupDialog />
       </div>
 
       {/* Table - Horizontal scroll on mobile with hidden scrollbar */}

@@ -7,7 +7,7 @@ export async function StartupsPage() {
   const startups = await getStartupsWithMetrics();
 
   return (
-    <div className="container mx-auto py-10 space-y-8">
+    <div className="container mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -15,7 +15,6 @@ export async function StartupsPage() {
             The database of verified startup revenues
           </h1>
         </div>
-        <AddStartupDialog />
       </div>
 
       {/* Data Table */}
