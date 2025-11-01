@@ -98,15 +98,6 @@ export function AdsRight({ ads }: AdsRightProps) {
                         <h4 className="font-semibold text-sm mb-1">
                           Your startup here
                         </h4>
-                        <div className="flex items-center justify-center gap-1">
-                          <DollarSign className="h-4 w-4 text-green-600" />
-                          <span className="font-bold text-green-600">
-                            ${spot.price}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            /month
-                          </span>
-                        </div>
                       </div>
                       <Button size="sm" variant="outline" className="text-xs">
                         <IconSpeakerphone className="h-4 w-4" />

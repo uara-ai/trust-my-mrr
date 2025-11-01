@@ -224,7 +224,7 @@
   "activeAds": [
     {
       "id": "ad-1",
-      "spotId": "right-1",
+      "spotId": "left-1",
       "startup": {
         "name": "Uara.ai",
         "logo": "https://uara.ai/logo.png",

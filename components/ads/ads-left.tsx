@@ -97,15 +97,6 @@ export function AdsLeft({ ads }: AdsLeftProps) {
                         <h4 className="font-semibold text-sm mb-1">
                           Your startup here
                         </h4>
-                        <div className="flex items-center justify-center gap-1">
-                          <DollarSign className="h-4 w-4 text-green-600" />
-                          <span className="font-bold text-green-600">
-                            ${spot.price}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            /month
-                          </span>
-                        </div>
                       </div>
                       <Button size="sm" variant="outline" className="text-xs">
                         <IconSpeakerphone className="h-4 w-4" />
@@ -146,24 +137,6 @@ export function AdsLeft({ ads }: AdsLeftProps) {
                       <p className="text-xs text-muted-foreground line-clamp-3 mb-3 flex-1">
                         {content.startup.description}
                       </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {spot.size}
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs">
-                            ${spot.price}/mo
-                          </Badge>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 text-xs"
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Visit
-                        </Button>
-                      </div>
                     </div>
                   </MinimalCard>
                 )}
