@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TrustMyMRR - Transparent Startup Revenue",
+  title: "Trust My MRR - Transparent Startup Revenue",
   description:
     "Track and compare startup revenue metrics with transparent Stripe data",
 };
