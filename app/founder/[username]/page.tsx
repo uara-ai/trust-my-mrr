@@ -90,14 +90,24 @@ export async function generateMetadata({ params }: FounderPageProps) {
   }
 
   const founder = founderResult.data;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://trustmymrr.com";
 
   return {
     title: `${
       founder.displayName || `@${founder.x_username}`
     } - Founder Dashboard`,
-    description: `View all startups and metrics for ${
+    description: `View all startups and aggregated revenue metrics for ${
       founder.displayName || `@${founder.x_username}`
-    }`,
+    }. Track total MRR, revenue, and startup portfolio performance.`,
+    keywords: [
+      founder.displayName || founder.x_username,
+      founder.x_username,
+      "founder",
+      "indie hacker",
+      "startup founder",
+      "revenue metrics",
+      "portfolio",
+    ],
     openGraph: {
       title: `${
         founder.displayName || `@${founder.x_username}`
@@ -106,6 +116,7 @@ export async function generateMetadata({ params }: FounderPageProps) {
         founder.displayName || `@${founder.x_username}`
       }`,
       type: "profile",
+      url: `${baseUrl}/founder/${username}`,
       images: [
         {
           url: `/api/og/founder/${username}`,
@@ -124,6 +135,9 @@ export async function generateMetadata({ params }: FounderPageProps) {
         founder.displayName || `@${founder.x_username}`
       }`,
       images: [`/api/og/founder/${username}`],
+    },
+    alternates: {
+      canonical: `${baseUrl}/founder/${username}`,
     },
   };
 }

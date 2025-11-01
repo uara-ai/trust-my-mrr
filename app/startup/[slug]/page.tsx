@@ -103,14 +103,27 @@ export async function generateMetadata({ params }: StartupPageProps) {
   }
 
   const startup = startupResult.data;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://trustmymrr.com";
 
   return {
     title: `${startup.name} - Metrics Dashboard`,
-    description: startup.description || `View metrics for ${startup.name}`,
+    description:
+      startup.description ||
+      `View real-time revenue metrics, MRR, and customer data for ${startup.name}. Transparent Stripe data directly from the founders.`,
+    keywords: [
+      startup.name,
+      "revenue",
+      "MRR",
+      "startup metrics",
+      "Stripe data",
+      "monthly recurring revenue",
+      "SaaS metrics",
+    ],
     openGraph: {
       title: `${startup.name} - Metrics Dashboard`,
       description: startup.description || `View metrics for ${startup.name}`,
       type: "website",
+      url: `${baseUrl}/startup/${slug}`,
       images: [
         {
           url: `/api/og/startup/${slug}`,
@@ -125,6 +138,9 @@ export async function generateMetadata({ params }: StartupPageProps) {
       title: `${startup.name} - Metrics Dashboard`,
       description: startup.description || `View metrics for ${startup.name}`,
       images: [`/api/og/startup/${slug}`],
+    },
+    alternates: {
+      canonical: `${baseUrl}/startup/${slug}`,
     },
   };
 }

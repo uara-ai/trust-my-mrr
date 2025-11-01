@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AdsRight } from "./ads-right";
 import { getAdsByPosition } from "@/lib/ads";
+import { GithubStars } from "../github-stars";
 
 interface SidebarRightProps extends React.ComponentProps<typeof Sidebar> {}
 
@@ -23,9 +24,7 @@ export async function SidebarRight(props: SidebarRightProps) {
         <AdsRight ads={rightAds} />
       </SidebarContent>
       <SidebarFooter>
-        <span className="text-xs text-muted-foreground">
-          Ads will be manually added, so you may not see them immediately.
-        </span>
+        <GithubStars />
       </SidebarFooter>
     </Sidebar>
   );

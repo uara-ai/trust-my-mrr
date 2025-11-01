@@ -18,21 +18,51 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://trustmymrr.com";
+
 export const metadata: Metadata = {
-  title: "Trust My MRR - Transparent Startup Revenue",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Trust My MRR - Transparent Startup Revenue",
+    template: "%s | Trust My MRR",
+  },
   description:
-    "Track and compare startup revenue metrics with transparent Stripe data",
+    "Track and compare startup revenue metrics with transparent Stripe data. Discover MRR, total revenue, and customer metrics from successful founders and startups.",
+  keywords: [
+    "MRR",
+    "Monthly Recurring Revenue",
+    "startup metrics",
+    "revenue tracking",
+    "Stripe data",
+    "transparent revenue",
+    "startup revenue",
+    "indie hackers",
+    "founder metrics",
+    "SaaS metrics",
+    "startup analytics",
+  ],
+  authors: [{ name: "Trust My MRR" }],
+  creator: "Trust My MRR",
+  publisher: "Trust My MRR",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     title: "Trust My MRR - Transparent Startup Revenue",
     description:
       "Track and compare startup revenue metrics with transparent Stripe data",
+    url: baseUrl,
+    siteName: "Trust My MRR",
     type: "website",
+    locale: "en_US",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "Trust My MRR",
+        alt: "Trust My MRR - Transparent Startup Revenue",
       },
     ],
   },
@@ -42,6 +72,22 @@ export const metadata: Metadata = {
     description:
       "Track and compare startup revenue metrics with transparent Stripe data",
     images: ["/api/og"],
+    creator: "@trustmymrr",
+    site: "@trustmymrr",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: baseUrl,
   },
 };
 
