@@ -13,8 +13,12 @@ import {
  * Get all active ads
  */
 export async function getActiveAds(): Promise<AdContent[]> {
+  "use server";
   try {
     const now = new Date();
+
+    console.log("[Ad Actions] Fetching active ads from database...");
+
     const ads = await prisma.ad.findMany({
       where: {
         status: "active",
@@ -34,7 +38,17 @@ export async function getActiveAds(): Promise<AdContent[]> {
       },
     });
 
-    return ads.map((ad) => ({
+    console.log(`[Ad Actions] Found ${ads.length} active ads in database`);
+
+    if (ads.length > 0) {
+      ads.forEach((ad) => {
+        console.log(
+          `[Ad Actions] Ad: ${ad.id}, Spot: ${ad.spotId}, Startup: ${ad.startup.name}, Expires: ${ad.expiresAt}`
+        );
+      });
+    }
+
+    const mappedAds = ads.map((ad) => ({
       id: ad.id,
       spotId: ad.spotId,
       startup: {
@@ -47,8 +61,12 @@ export async function getActiveAds(): Promise<AdContent[]> {
       expiresAt: ad.expiresAt,
       isActive: ad.status === "active" && ad.expiresAt > now,
     }));
+
+    console.log(`[Ad Actions] Returning ${mappedAds.length} mapped ads`);
+
+    return mappedAds;
   } catch (error) {
-    console.error("Failed to fetch active ads:", error);
+    console.error("[Ad Actions] Failed to fetch active ads:", error);
     return [];
   }
 }
@@ -594,12 +612,20 @@ export async function updateAdWithStartup({
       // The webhook will update this data later
     }
 
+    console.log(
+      `[updateAdWithStartup] Updating ad ${existingAd.id} with startup ${startupId}`
+    );
+    console.log(
+      `[updateAdWithStartup] Current ad status: ${existingAd.status}`
+    );
+
     // Update the ad with startup info, tagline, and all Stripe data
     // Filter out undefined values from stripeData
     const updateData: any = {
       startupId,
       tagline,
-      status: "active",
+      status: "active", // ALWAYS set to active when startup is selected after payment
+      subscriptionStatus: stripeData.subscriptionStatus || "active",
     };
 
     // Only add Stripe fields if they have valid values
@@ -611,9 +637,6 @@ export async function updateAdWithStartup({
     }
     if (stripeData.stripePaymentId) {
       updateData.stripePaymentId = stripeData.stripePaymentId;
-    }
-    if (stripeData.subscriptionStatus) {
-      updateData.subscriptionStatus = stripeData.subscriptionStatus;
     }
     if (
       stripeData.currentPeriodStart instanceof Date &&
@@ -631,7 +654,7 @@ export async function updateAdWithStartup({
       updateData.cancelAtPeriodEnd = stripeData.cancelAtPeriodEnd;
     }
 
-    console.log("Final update data:", updateData);
+    console.log("[updateAdWithStartup] Final update data:", updateData);
 
     const ad = await prisma.ad.update({
       where: { id: existingAd.id },
@@ -641,7 +664,17 @@ export async function updateAdWithStartup({
       },
     });
 
+    console.log(
+      `[updateAdWithStartup] Ad updated successfully. New status: ${ad.status}`
+    );
+    console.log(
+      `[updateAdWithStartup] Ad spot: ${ad.spotId}, Startup: ${ad.startup.name}`
+    );
+
+    // Revalidate all paths to update the cache
     revalidatePath("/");
+    revalidatePath("/startup");
+    revalidatePath("/founder");
 
     return {
       success: true,

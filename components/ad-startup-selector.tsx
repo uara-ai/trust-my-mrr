@@ -69,18 +69,30 @@ export function AdStartupSelector({
     setError(null);
 
     try {
+      console.log("[AdStartupSelector] Submitting ad with:", {
+        sessionId,
+        startupId: selectedStartupId,
+        tagline: tagline || undefined,
+      });
+
       const result = await updateAdWithStartup({
         sessionId,
         startupId: selectedStartupId,
         tagline: tagline || undefined,
       });
 
+      console.log("[AdStartupSelector] Update result:", result);
+
       if (result.success) {
+        console.log("[AdStartupSelector] Ad activated successfully!");
+        // Force a hard refresh to ensure the ad appears immediately
+        window.location.reload();
         onComplete();
       } else {
         setError(result.error || "Failed to update ad");
       }
     } catch (err) {
+      console.error("[AdStartupSelector] Error:", err);
       setError("Failed to update ad");
     } finally {
       setSubmitting(false);

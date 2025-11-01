@@ -1,4 +1,5 @@
 import * as React from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +12,9 @@ import { GithubStars } from "../github-stars";
 interface SidebarRightProps extends React.ComponentProps<typeof Sidebar> {}
 
 export async function SidebarRight(props: SidebarRightProps) {
+  // Prevent caching to get live ad data
+  noStore();
+
   // Fetch right ads
   const rightAds = await getAdsByPosition("right");
 

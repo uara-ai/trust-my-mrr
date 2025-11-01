@@ -78,24 +78,18 @@ export async function getAdSpotsWithPrice(): Promise<AdSpotWithPrice[]> {
 }
 
 /**
- * Get all active ads (from database if available, fallback to JSON)
+ * Get all active ads from database
  */
 export async function getActiveAdsData(): Promise<AdContent[]> {
   try {
-    // Try to get from database first
+    // Get from database
     const dbAds = await getActiveAds();
-    if (dbAds && dbAds.length > 0) {
-      return dbAds;
-    }
+    return dbAds;
   } catch (error) {
-    console.error(
-      "Failed to fetch ads from database, using JSON fallback:",
-      error
-    );
+    console.error("Failed to fetch ads from database:", error);
+    // Return empty array on error
+    return [];
   }
-
-  // Return empty array as fallback
-  return [];
 }
 
 /**
@@ -104,20 +98,51 @@ export async function getActiveAdsData(): Promise<AdContent[]> {
 export async function getAdsByPosition(
   position: "top" | "right" | "bottom" | "left"
 ): Promise<AdCardData[]> {
-  const spotsWithPrice = await getAdSpotsWithPrice();
-  const spots = spotsWithPrice.filter((spot) => spot.position === position);
-  const activeAds = await getActiveAdsData();
+  try {
+    const spotsWithPrice = await getAdSpotsWithPrice();
+    const spots = spotsWithPrice.filter((spot) => spot.position === position);
+    const activeAds = await getActiveAdsData();
 
-  return spots.map((spot) => {
-    const content = activeAds.find(
-      (ad) => ad.spotId === spot.id && ad.isActive && ad.expiresAt > new Date()
+    console.log(`[Ads] Fetching ads for position: ${position}`);
+    console.log(`[Ads] Total spots for ${position}:`, spots.length);
+    console.log(`[Ads] Total active ads:`, activeAds.length);
+
+    const result = spots.map((spot) => {
+      const now = new Date();
+      const content = activeAds.find(
+        (ad) => ad.spotId === spot.id && ad.isActive && ad.expiresAt > now
+      );
+
+      if (content) {
+        console.log(`[Ads] Found active ad for spot ${spot.id}:`, {
+          startup: content.startup.name,
+          expiresAt: content.expiresAt,
+        });
+      }
+
+      return {
+        spot,
+        content: content || null,
+      };
+    });
+
+    console.log(
+      `[Ads] Returning ${
+        result.filter((r) => r.content).length
+      } active ads for ${position}`
     );
 
-    return {
+    return result;
+  } catch (error) {
+    console.error(`[Ads] Error fetching ads for position ${position}:`, error);
+    // Return empty spots on error
+    const spotsWithPrice = await getAdSpotsWithPrice();
+    const spots = spotsWithPrice.filter((spot) => spot.position === position);
+    return spots.map((spot) => ({
       spot,
-      content: content || null,
-    };
-  });
+      content: null,
+    }));
+  }
 }
 
 /**
