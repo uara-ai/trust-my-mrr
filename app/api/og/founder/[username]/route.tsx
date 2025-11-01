@@ -5,8 +5,6 @@ import {
   getFounderAggregatedMetrics,
 } from "@/app/actions/founder-detail.actions";
 
-export const runtime = "edge";
-
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ username: string }> }

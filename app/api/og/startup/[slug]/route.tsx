@@ -2,8 +2,6 @@ import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
 import { getStartupBySlug } from "@/app/actions/startup-detail.actions";
 
-export const runtime = "edge";
-
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
