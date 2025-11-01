@@ -139,11 +139,9 @@ export function StartupHeader({
             <div className="flex items-center gap-3 mt-2">
               <div className="flex items-center gap-3">
                 {founders.map((founder) => (
-                  <a
+                  <Link
                     key={founder.id}
-                    href={`https://x.com/${founder.x_username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`/founder/${founder.x_username}`}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     title={founder.displayName || `@${founder.x_username}`}
                   >
@@ -155,7 +153,7 @@ export function StartupHeader({
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">
                       @{founder.x_username}
                     </span>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

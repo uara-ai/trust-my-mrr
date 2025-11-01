@@ -114,25 +114,21 @@ export const columns: ColumnDef<StartupWithMetrics>[] = [
       return (
         <div className="flex flex-col gap-1.5 sm:gap-2">
           {startup.founders.map((founder) => (
-            <div
+            <Link
               key={founder.id}
-              className="flex items-center gap-1.5 sm:gap-2"
+              href={`/founder/${founder.x_username}`}
+              className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity"
+              title={founder.displayName || `@${founder.x_username}`}
             >
               <FounderAvatar
                 username={founder.x_username}
                 profileImageUrl={founder.profileImageUrl}
                 size="sm"
               />
-              <a
-                href={`https://x.com/${founder.x_username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs sm:text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 truncate"
-                title={founder.displayName || `@${founder.x_username}`}
-              >
+              <span className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 truncate">
                 @{founder.x_username}
-              </a>
-            </div>
+              </span>
+            </Link>
           ))}
         </div>
       );
