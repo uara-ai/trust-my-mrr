@@ -6,13 +6,6 @@ export function getAdSpots(): AdSpot[] {
   return adData.adSpots as AdSpot[];
 }
 
-export function getActiveAdsFromJSON(): AdContent[] {
-  return adData.activeAds.map((ad) => ({
-    ...ad,
-    expiresAt: new Date(ad.expiresAt),
-  })) as AdContent[];
-}
-
 /**
  * Get all active ads (from database if available, fallback to JSON)
  */
@@ -30,12 +23,12 @@ export async function getActiveAdsData(): Promise<AdContent[]> {
     );
   }
 
-  // Fallback to JSON data
-  return getActiveAdsFromJSON();
+  // Return empty array as fallback
+  return [];
 }
 
 /**
- * Get ads by position with their active content
+ * Get ads by position
  */
 export async function getAdsByPosition(
   position: "top" | "right" | "bottom" | "left"

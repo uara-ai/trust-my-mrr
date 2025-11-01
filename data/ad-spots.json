@@ -220,20 +220,5 @@
         "height": "120px"
       }
     }
-  ],
-  "activeAds": [
-    {
-      "id": "ad-1",
-      "spotId": "left-1",
-      "startup": {
-        "name": "Uara.ai",
-        "logo": "https://uara.ai/logo.png",
-        "website": "https://uara.ai",
-        "description": "Build smarter habits with connected health data.",
-        "tagline": "Live younger, for longer."
-      },
-      "expiresAt": "2025-12-31T23:59:59Z",
-      "isActive": true
-    }
   ]
 }

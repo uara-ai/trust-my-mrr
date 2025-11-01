@@ -309,3 +309,125 @@ export async function updateExpiredAds() {
     };
   }
 }
+
+/**
+ * Get ad by Stripe session ID
+ */
+export async function getAdBySessionId(sessionId: string) {
+  try {
+    const ad = await prisma.ad.findFirst({
+      where: {
+        stripeSessionId: sessionId,
+      },
+      include: {
+        startup: true,
+      },
+    });
+
+    if (!ad) {
+      return {
+        success: false,
+        error: "Ad not found",
+      };
+    }
+
+    return {
+      success: true,
+      ad,
+    };
+  } catch (error) {
+    console.error("Failed to fetch ad by session ID:", error);
+    return {
+      success: false,
+      error: "Failed to fetch ad",
+    };
+  }
+}
+
+/**
+ * Update ad with startup and tagline (after successful payment)
+ */
+export async function updateAdWithStartup({
+  sessionId,
+  startupId,
+  tagline,
+}: {
+  sessionId: string;
+  startupId: string;
+  tagline?: string;
+}) {
+  try {
+    // Find the ad by stripe session ID
+    const existingAd = await prisma.ad.findFirst({
+      where: {
+        stripeSessionId: sessionId,
+      },
+    });
+
+    if (!existingAd) {
+      return {
+        success: false,
+        error: "Ad not found for this session",
+      };
+    }
+
+    // Update the ad with startup info and set to active
+    const ad = await prisma.ad.update({
+      where: { id: existingAd.id },
+      data: {
+        startupId,
+        tagline,
+        status: "active",
+      },
+      include: {
+        startup: true,
+      },
+    });
+
+    revalidatePath("/");
+
+    return {
+      success: true,
+      ad,
+    };
+  } catch (error) {
+    console.error("Failed to update ad with startup:", error);
+    return {
+      success: false,
+      error: "Failed to update ad",
+    };
+  }
+}
+
+/**
+ * Get all startups (basic info only for selection)
+ */
+export async function getAllStartupsForSelection() {
+  try {
+    const startups = await prisma.startup.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        website: true,
+        description: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    return {
+      success: true,
+      startups,
+    };
+  } catch (error) {
+    console.error("Failed to fetch startups:", error);
+    return {
+      success: false,
+      error: "Failed to fetch startups",
+      startups: [],
+    };
+  }
+}

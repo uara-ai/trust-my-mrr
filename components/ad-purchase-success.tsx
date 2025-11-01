@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, X, ExternalLink, ArrowRight } from "lucide-react";
+import { CheckCircle2, X, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,11 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AdStartupSelector } from "./ad-startup-selector";
 
 interface AdPurchaseSuccessProps {
   sessionId: string;
   onClose: () => void;
 }
+
+type Step = "success" | "select-startup" | "complete";
 
 export function AdPurchaseSuccess({
   sessionId,
@@ -25,6 +28,7 @@ export function AdPurchaseSuccess({
 }: AdPurchaseSuccessProps) {
   const router = useRouter();
   const [isClosing, setIsClosing] = useState(false);
+  const [step, setStep] = useState<Step>("success");
 
   const handleClose = () => {
     setIsClosing(true);
@@ -35,14 +39,13 @@ export function AdPurchaseSuccess({
     }, 300);
   };
 
-  // Auto-close after 15 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleClose();
-    }, 15000);
+  const handleContinue = () => {
+    setStep("select-startup");
+  };
 
-    return () => clearTimeout(timer);
-  }, []);
+  const handleComplete = () => {
+    setStep("complete");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -65,84 +68,136 @@ export function AdPurchaseSuccess({
           </Button>
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-green-500/10 p-2">
-              <CheckCircle2 className="h-8 w-8 text-green-500" />
+              {step === "complete" ? (
+                <Sparkles className="h-8 w-8 text-green-500" />
+              ) : (
+                <CheckCircle2 className="h-8 w-8 text-green-500" />
+              )}
             </div>
             <div>
-              <CardTitle className="text-2xl">Payment Successful!</CardTitle>
+              <CardTitle className="text-2xl">
+                {step === "success" && "Payment Successful!"}
+                {step === "select-startup" && "Choose Your Startup"}
+                {step === "complete" && "Ad Activated!"}
+              </CardTitle>
               <CardDescription className="mt-1">
-                Your ad spot has been purchased
+                {step === "success" && "Your ad spot has been purchased"}
+                {step === "select-startup" &&
+                  "Select which startup to advertise"}
+                {step === "complete" && "Your ad is now live"}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="rounded-lg bg-muted p-4 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Session ID:</span>
-              <Badge variant="outline" className="font-mono text-xs">
-                {sessionId.slice(0, 20)}...
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Status:</span>
-              <Badge variant="default" className="bg-green-500">
-                ✓ Confirmed
-              </Badge>
-            </div>
-          </div>
+          {step === "success" && (
+            <>
+              <div className="rounded-lg bg-muted p-4 space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Session ID:</span>
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {sessionId.slice(0, 20)}...
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Status:</span>
+                  <Badge variant="default" className="bg-green-500">
+                    ✓ Payment Confirmed
+                  </Badge>
+                </div>
+              </div>
 
-          <div className="space-y-2 text-sm">
-            <p className="font-medium">What happens next?</p>
-            <ul className="space-y-2 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                <span>
-                  Your ad will be activated within 24 hours after we review your
-                  submission
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                <span>
-                  You'll receive an email confirmation with your ad details
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                <span>
-                  Your subscription will automatically renew monthly unless
-                  cancelled
-                </span>
-              </li>
-            </ul>
-          </div>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <p className="text-sm font-medium mb-2">Next Step</p>
+                <p className="text-sm text-muted-foreground">
+                  Select which startup you want to advertise in this spot. You
+                  can also add a custom tagline to make your ad stand out.
+                </p>
+              </div>
 
-          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <p className="text-sm text-muted-foreground">
-              <strong className="text-foreground">
-                Need to provide ad content?
-              </strong>{" "}
-              We'll send you a link to submit your startup logo, tagline, and
-              description.
-            </p>
-          </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <p className="font-medium text-foreground">What's included:</p>
+                <ul className="space-y-1">
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>Monthly recurring ad spot</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>Visible to all visitors</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>Update tagline anytime</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>Cancel subscription anytime</span>
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
+
+          {step === "select-startup" && (
+            <AdStartupSelector
+              sessionId={sessionId}
+              onComplete={handleComplete}
+            />
+          )}
+
+          {step === "complete" && (
+            <>
+              <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 text-center">
+                <p className="text-sm font-medium text-green-700 dark:text-green-400">
+                  🎉 Your ad is now live and visible to visitors!
+                </p>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <p className="font-medium">What happens next?</p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                    <span>Your ad is visible immediately on the site</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                    <span>You'll receive email confirmations and updates</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                    <span>Subscription renews monthly unless cancelled</span>
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
         </CardContent>
 
         <CardFooter className="flex gap-2">
-          <Button onClick={handleClose} variant="outline" className="flex-1">
-            Continue Browsing
-          </Button>
-          <Button
-            onClick={() => {
-              window.open("https://stripe.com/docs", "_blank");
-            }}
-            variant="default"
-            className="flex-1"
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View Receipt
-          </Button>
+          {step === "success" && (
+            <>
+              <Button
+                onClick={handleClose}
+                variant="outline"
+                className="flex-1"
+              >
+                Later
+              </Button>
+              <Button onClick={handleContinue} className="flex-1">
+                Select Startup
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </>
+          )}
+
+          {step === "complete" && (
+            <Button onClick={handleClose} className="w-full">
+              Close & View Site
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

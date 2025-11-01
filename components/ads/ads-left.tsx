@@ -1,7 +1,5 @@
 "use client";
 
-import { ExternalLink, DollarSign, Package, ShoppingCart } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +11,7 @@ import {
 import { MinimalCard } from "@/components/minimal-card";
 import type { AdCardData } from "@/types/ads";
 import { IconSpeakerphone } from "@tabler/icons-react";
+import { getGoogleFavicon } from "@/lib/favicon";
 
 interface AdsLeftProps {
   ads: AdCardData[];
@@ -87,19 +86,18 @@ export function AdsLeft({ ads }: AdsLeftProps) {
                         );
                       }
                     }}
-                    className="border-dashed border-2 hover:border-primary hover:bg-accent/50"
-                    style={{
-                      minHeight: spot.dimensions.height,
-                    }}
+                    className="border-dashed border-2 hover:border-primary hover:bg-accent/50 p-4"
                   >
-                    <div className="flex flex-col items-center justify-center h-full text-center gap-3">
-                      <div>
-                        <h4 className="font-semibold text-sm mb-1">
-                          Your startup here
-                        </h4>
-                      </div>
-                      <Button size="sm" variant="outline" className="text-xs">
-                        <IconSpeakerphone className="h-4 w-4" />
+                    <div className="flex flex-col items-center justify-center text-center gap-2">
+                      <h4 className="font-semibold text-xs">
+                        Your startup here
+                      </h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs h-7"
+                      >
+                        <IconSpeakerphone className="h-3 w-3" />
                         Ads here
                       </Button>
                     </div>
@@ -109,34 +107,57 @@ export function AdsLeft({ ads }: AdsLeftProps) {
                   <MinimalCard
                     variant="default"
                     onClick={() => handleVisitAd(content.startup.website)}
-                    className="hover:shadow-md"
-                    style={{
-                      minHeight: spot.dimensions.height,
-                    }}
+                    className="hover:shadow-md p-3"
                   >
-                    <div className="flex flex-col h-full">
-                      <div className="flex items-start gap-3 mb-3">
-                        {content.startup.logo && (
-                          <img
-                            src={content.startup.logo}
-                            alt={content.startup.name}
-                            className="w-12 h-12 rounded-lg object-cover"
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-semibold truncate">
-                            {content.startup.name}
-                          </h4>
-                          {content.startup.tagline && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                              {content.startup.tagline}
-                            </p>
-                          )}
+                    <div className="flex flex-col gap-2">
+                      {/* Logo and Name on same line */}
+                      <div className="flex items-center gap-2">
+                        {/* Logo with fallback */}
+                        <div className="relative shrink-0">
+                          {content.startup.logo || content.startup.website ? (
+                            <img
+                              src={
+                                content.startup.logo ||
+                                getGoogleFavicon(content.startup.website, 40)
+                              }
+                              alt={content.startup.name}
+                              className="h-10 w-10 rounded-lg object-cover border border-zinc-200 dark:border-zinc-800"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = "none";
+                                const fallback =
+                                  target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = "flex";
+                              }}
+                            />
+                          ) : null}
+                          <div
+                            className="h-10 w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 items-center justify-center"
+                            style={{
+                              display:
+                                content.startup.logo || content.startup.website
+                                  ? "none"
+                                  : "flex",
+                            }}
+                          >
+                            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                              {content.startup.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
                         </div>
+
+                        {/* Name */}
+                        <h4 className="text-sm font-semibold truncate flex-1">
+                          {content.startup.name}
+                        </h4>
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-3 mb-3 flex-1">
-                        {content.startup.description}
-                      </p>
+
+                      {/* Tagline */}
+                      {content.startup.tagline && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {content.startup.tagline}
+                        </p>
+                      )}
                     </div>
                   </MinimalCard>
                 )}
