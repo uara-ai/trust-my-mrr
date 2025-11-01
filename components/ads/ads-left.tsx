@@ -19,9 +19,37 @@ interface AdsLeftProps {
 }
 
 export function AdsLeft({ ads }: AdsLeftProps) {
-  const handleBuyAdSpot = (spotId: string, price: number) => {
-    // TODO: Implement Stripe checkout
-    console.log(`Buying ad spot ${spotId} for $${price}`);
+  const handleBuyAdSpot = async (spotId: string, stripePriceId: string) => {
+    try {
+      const response = await fetch("/api/checkout/ad", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          spotId,
+          stripePriceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create checkout session");
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to start checkout process"
+      );
+    }
   };
 
   const handleVisitAd = (url: string) => {
@@ -50,7 +78,15 @@ export function AdsLeft({ ads }: AdsLeftProps) {
                   // Available ad spot - Clickable placeholder
                   <MinimalCard
                     variant="default"
-                    onClick={() => handleBuyAdSpot(spot.id, spot.price)}
+                    onClick={() => {
+                      if (spot.stripePriceId) {
+                        handleBuyAdSpot(spot.id, spot.stripePriceId);
+                      } else {
+                        alert(
+                          "Stripe price ID is not configured for this ad spot"
+                        );
+                      }
+                    }}
                     className="border-dashed border-2 hover:border-primary hover:bg-accent/50"
                     style={{
                       minHeight: spot.dimensions.height,
