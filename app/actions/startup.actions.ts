@@ -25,6 +25,19 @@ export async function fetchStripeBusinessInfo(apiKey: string) {
     // Fetch account information
     const account = await stripe.accounts.retrieve();
 
+    // Get logo URL from Stripe File if available
+    let logoUrl: string | null = null;
+    const businessProfile = account.business_profile as any;
+
+    if (businessProfile?.icon) {
+      try {
+        const file = await stripe.files.retrieve(businessProfile.icon);
+        logoUrl = file.url ?? null;
+      } catch (fileError) {
+        console.error("Error retrieving logo file:", fileError);
+      }
+    }
+
     return {
       success: true,
       data: {
@@ -33,6 +46,7 @@ export async function fetchStripeBusinessInfo(apiKey: string) {
           account.settings?.dashboard?.display_name ||
           "Unknown Business",
         description: account.business_profile?.support_url || null,
+        logo: logoUrl,
       },
     };
   } catch (error) {
@@ -65,25 +79,31 @@ export async function createStartup(input: CreateStartupInput) {
       };
     }
 
-    const { name, description } = businessInfoResult.data;
+    const { name, description, logo } = businessInfoResult.data;
 
-    // Create startup with founders
+    // Create startup with founders in a transaction
     const startup = await prisma.startup.create({
       data: {
         name,
         description,
+        logo,
         apiKey: input.apiKey,
         website: input.website,
-        founders: input.founders
-          ? {
-              create: input.founders.map((username) => ({
-                x_username: username,
-              })),
-            }
-          : undefined,
+        founders:
+          input.founders && input.founders.length > 0
+            ? {
+                create: input.founders.map((username) => ({
+                  x_username: username,
+                })),
+              }
+            : undefined,
       },
       include: {
-        founders: true,
+        founders: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
     });
 

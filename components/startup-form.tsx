@@ -45,6 +45,7 @@ interface StartupFormProps {
 interface BusinessInfo {
   name: string;
   description: string | null;
+  logo: string | null;
 }
 
 export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
@@ -211,20 +212,31 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
         {/* Business Info Preview */}
         {businessInfo && (
           <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
-            <div className="flex items-start gap-2">
-              <Check className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-              <div className="flex-1">
-                <h4 className="font-medium text-green-900 dark:text-green-100">
+            <div className="flex items-start gap-3">
+              <Check className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
                   Business Found
                 </h4>
-                <p className="mt-1 text-sm text-green-800 dark:text-green-200">
-                  <strong>Name:</strong> {businessInfo.name}
-                </p>
-                {businessInfo.description && (
-                  <p className="mt-0.5 text-sm text-green-800 dark:text-green-200">
-                    <strong>Info:</strong> {businessInfo.description}
-                  </p>
-                )}
+                <div className="flex items-start gap-3">
+                  {businessInfo.logo && (
+                    <img
+                      src={businessInfo.logo}
+                      alt={businessInfo.name}
+                      className="h-12 w-12 rounded-lg object-cover border border-green-300 dark:border-green-700 shrink-0"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      <strong>Name:</strong> {businessInfo.name}
+                    </p>
+                    {businessInfo.description && (
+                      <p className="mt-1 text-sm text-green-800 dark:text-green-200 wrap-break-word">
+                        <strong>Info:</strong> {businessInfo.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
