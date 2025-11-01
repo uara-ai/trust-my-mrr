@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStripeBusinessData } from "@/services/stripe-data.service";
+import { getStripeBusinessData } from "../../../services/stripe-data.service";
 
 // Enable caching with 1 hour revalidation
 export const revalidate = 3600; // Cache for 1 hour (3600 seconds)

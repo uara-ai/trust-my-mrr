@@ -1,9 +1,9 @@
-import { stripe } from "@/lib/stripe";
+import { stripe } from "../lib/stripe";
 import type {
   StripeBusinessData,
   MRRCalculation,
   RevenueData,
-} from "@/types/stripe-data";
+} from "../types/stripe-data";
 
 // Extended type for business profile with icon support
 interface ExtendedBusinessProfile {
