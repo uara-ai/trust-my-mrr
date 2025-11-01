@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,10 @@ interface AdsRightProps {
 }
 
 export function AdsRight({ ads }: AdsRightProps) {
+  const [loadingSpotId, setLoadingSpotId] = useState<string | null>(null);
+
   const handleBuyAdSpot = async (spotId: string) => {
+    setLoadingSpotId(spotId);
     try {
       const response = await fetch("/api/checkout/ad", {
         method: "POST",
@@ -47,6 +51,7 @@ export function AdsRight({ ads }: AdsRightProps) {
           ? error.message
           : "Failed to start checkout process"
       );
+      setLoadingSpotId(null);
     }
   };
 
@@ -76,7 +81,7 @@ export function AdsRight({ ads }: AdsRightProps) {
                   // Available ad spot - Clickable placeholder
                   <MinimalCard
                     variant="default"
-                    onClick={() => handleBuyAdSpot(spot.id)}
+                    onClick={() => !loadingSpotId && handleBuyAdSpot(spot.id)}
                     className="border-dashed border-2 hover:border-primary hover:bg-accent/50 p-4"
                   >
                     <div className="flex flex-col items-center justify-center text-center gap-2">
@@ -88,9 +93,19 @@ export function AdsRight({ ads }: AdsRightProps) {
                           size="sm"
                           variant="outline"
                           className="text-xs h-7"
+                          disabled={loadingSpotId === spot.id}
                         >
-                          <IconSpeakerphone className="h-3 w-3" />${spot.price}
-                          /mo
+                          {loadingSpotId === spot.id ? (
+                            <>
+                              <span className="mr-2">Loading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <IconSpeakerphone className="h-3 w-3" />$
+                              {spot.price}
+                              /mo
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
