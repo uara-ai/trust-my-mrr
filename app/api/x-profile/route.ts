@@ -4,6 +4,8 @@ import { fetchXUserProfile, fetchMultipleXUserProfiles } from "@/lib/x-api";
 // Enable caching with 1 day revalidation
 export const revalidate = 86400; // 24 hours in seconds
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/x-profile?username=handle
  * or
