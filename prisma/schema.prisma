@@ -12,6 +12,7 @@ model Startup {
   id          String    @id @default(cuid())
   name        String    @db.VarChar(255)
   description String?   @db.Text
+  apiKey      String    @db.VarChar(255) @unique
   website     String?   @db.VarChar(500)
   createdAt   DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
