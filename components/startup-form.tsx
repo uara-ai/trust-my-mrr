@@ -34,18 +34,10 @@ const startupFormSchema = z.object({
     ),
   website: z
     .string()
-    .refine(
-      (val) => {
-        if (!val || val === "") return true;
-        // Allow domain.com or www.domain.com format
-        return /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
-          val
-        );
-      },
-      { message: "Must be a valid domain (e.g., example.com)" }
-    )
+    .url("Must be a valid URL")
     .optional()
-    .or(z.literal("")),
+    .or(z.literal(""))
+    .or(z.literal("https://")),
 });
 
 type StartupFormValues = z.infer<typeof startupFormSchema>;
@@ -74,7 +66,7 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
     resolver: zodResolver(startupFormSchema),
     defaultValues: {
       apiKey: "",
-      website: "",
+      website: "https://",
     },
   });
 
@@ -127,9 +119,15 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
     setError(null);
 
     try {
+      // Only include website if it's more than just "https://"
+      const websiteValue =
+        values.website && values.website !== "https://"
+          ? values.website
+          : undefined;
+
       const input: CreateStartupInput = {
         apiKey: values.apiKey,
-        website: values.website ? `https://${values.website}` : undefined,
+        website: websiteValue,
         founders: founders.length > 0 ? founders : undefined,
       };
 
@@ -262,17 +260,41 @@ export function StartupForm({ onSuccess, onCancel }: StartupFormProps) {
             <FormItem>
               <FormLabel>Website</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400 pointer-events-none">
-                    https://
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="example.com"
-                    {...field}
-                    className="pl-[68px]"
-                  />
-                </div>
+                <Input
+                  type="text"
+                  placeholder="https://example.com"
+                  {...field}
+                  onFocus={(e) => {
+                    // If empty or just "https://", position cursor after "https://"
+                    if (!field.value || field.value === "https://") {
+                      field.onChange("https://");
+                      setTimeout(() => {
+                        e.target.setSelectionRange(8, 8);
+                      }, 0);
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Prevent user from deleting "https://"
+                    if (!value.startsWith("https://")) {
+                      field.onChange("https://");
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    const cursorPos = input.selectionStart || 0;
+
+                    // Prevent backspace/delete if cursor is within "https://"
+                    if (
+                      (e.key === "Backspace" && cursorPos <= 8) ||
+                      (e.key === "Delete" && cursorPos < 8)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
               </FormControl>
               <FormDescription>
                 Your startup&apos;s website (optional)

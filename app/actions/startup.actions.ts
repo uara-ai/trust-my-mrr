@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { unstable_cache } from "next/cache";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { fetchStripeMetrics } from "@/lib/stripe-client";
@@ -151,15 +152,23 @@ export async function createStartup(input: CreateStartupInput) {
 }
 
 /**
- * Get all startups with their Stripe metrics
+ * Get startups with founders from database (internal, cached)
  */
-export async function getStartupsWithMetrics(
-  filters?: StartupFilters
-): Promise<StartupWithMetrics[]> {
-  try {
-    const startups = await prisma.startup.findMany({
+const getCachedStartups = unstable_cache(
+  async (filters?: StartupFilters) => {
+    return await prisma.startup.findMany({
       include: {
-        founders: true,
+        founders: {
+          select: {
+            id: true,
+            x_username: true,
+            profileImageUrl: true,
+            displayName: true,
+            startupId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
       orderBy:
         filters?.sortField === "createdAt"
@@ -179,6 +188,23 @@ export async function getStartupsWithMetrics(
           }
         : undefined,
     });
+  },
+  ["startups-with-founders"],
+  {
+    revalidate: 3600, // Cache for 1 hour
+    tags: ["startups"],
+  }
+);
+
+/**
+ * Get all startups with their Stripe metrics
+ * Database query cached for 1 hour
+ */
+export async function getStartupsWithMetrics(
+  filters?: StartupFilters
+): Promise<StartupWithMetrics[]> {
+  try {
+    const startups = await getCachedStartups(filters);
 
     // Fetch metrics for all startups in parallel
     const startupsWithMetrics = await Promise.all(
