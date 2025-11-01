@@ -56,14 +56,6 @@ export function StartupHeader({
 
   return (
     <div className="space-y-6">
-      {/* Back Button */}
-      <Link href="/">
-        <Button variant="ghost" size="sm" className="gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Startups
-        </Button>
-      </Link>
-
       {/* Header Info */}
       <div className="flex items-start gap-4">
         <div className="flex items-center gap-2">

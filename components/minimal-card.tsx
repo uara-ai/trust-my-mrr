@@ -10,6 +10,7 @@ interface MinimalCardProps {
   onClick?: () => void;
   href?: string;
   variant?: "default" | "compact" | "minimal";
+  style?: React.CSSProperties;
 }
 
 export function MinimalCard({
@@ -18,6 +19,7 @@ export function MinimalCard({
   onClick,
   href,
   variant = "default",
+  style,
 }: MinimalCardProps) {
   const baseClasses =
     "bg-white border border-gray-200 rounded-sm transition-all duration-200";
@@ -36,7 +38,7 @@ export function MinimalCard({
   );
 
   const cardContent = (
-    <div className={cardClasses} onClick={onClick}>
+    <div className={cardClasses} onClick={onClick} style={style}>
       {children}
     </div>
   );

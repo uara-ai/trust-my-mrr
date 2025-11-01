@@ -1,0 +1,252 @@
+{
+  "adSpots": [
+    {
+      "id": "top-hero-banner",
+      "size": "banner",
+      "position": "top",
+      "price": 1999,
+      "stripePriceId": "price_top_hero_banner",
+      "dimensions": {
+        "width": "100%",
+        "height": "120px"
+      }
+    },
+    {
+      "id": "top-secondary-banner",
+      "size": "banner",
+      "position": "top",
+      "price": 1299,
+      "stripePriceId": "price_top_secondary_banner",
+      "dimensions": {
+        "width": "100%",
+        "height": "90px"
+      }
+    },
+    {
+      "id": "right-xl-1",
+      "size": "large",
+      "position": "right",
+      "price": 999,
+      "stripePriceId": "price_right_xl_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "300px"
+      }
+    },
+    {
+      "id": "left-xl-1",
+      "size": "large",
+      "position": "left",
+      "price": 899,
+      "stripePriceId": "price_left_xl_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "300px"
+      }
+    },
+    {
+      "id": "right-large-1",
+      "size": "large",
+      "position": "right",
+      "price": 699,
+      "stripePriceId": "price_right_large_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "250px"
+      }
+    },
+    {
+      "id": "left-large-1",
+      "size": "large",
+      "position": "left",
+      "price": 599,
+      "stripePriceId": "price_left_large_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "250px"
+      }
+    },
+    {
+      "id": "right-medium-1",
+      "size": "medium",
+      "position": "right",
+      "price": 399,
+      "stripePriceId": "price_right_medium_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "180px"
+      }
+    },
+    {
+      "id": "right-medium-2",
+      "size": "medium",
+      "position": "right",
+      "price": 349,
+      "stripePriceId": "price_right_medium_2",
+      "dimensions": {
+        "width": "100%",
+        "height": "180px"
+      }
+    },
+    {
+      "id": "left-medium-1",
+      "size": "medium",
+      "position": "left",
+      "price": 299,
+      "stripePriceId": "price_left_medium_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "180px"
+      }
+    },
+    {
+      "id": "left-medium-2",
+      "size": "medium",
+      "position": "left",
+      "price": 249,
+      "stripePriceId": "price_left_medium_2",
+      "dimensions": {
+        "width": "100%",
+        "height": "180px"
+      }
+    },
+    {
+      "id": "right-small-1",
+      "size": "small",
+      "position": "right",
+      "price": 199,
+      "stripePriceId": "price_right_small_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "120px"
+      }
+    },
+    {
+      "id": "right-small-2",
+      "size": "small",
+      "position": "right",
+      "price": 179,
+      "stripePriceId": "price_right_small_2",
+      "dimensions": {
+        "width": "100%",
+        "height": "120px"
+      }
+    },
+    {
+      "id": "left-small-1",
+      "size": "small",
+      "position": "left",
+      "price": 149,
+      "stripePriceId": "price_left_small_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "120px"
+      }
+    },
+    {
+      "id": "left-small-2",
+      "size": "small",
+      "position": "left",
+      "price": 129,
+      "stripePriceId": "price_left_small_2",
+      "dimensions": {
+        "width": "100%",
+        "height": "120px"
+      }
+    },
+    {
+      "id": "right-compact-1",
+      "size": "small",
+      "position": "right",
+      "price": 99,
+      "stripePriceId": "price_right_compact_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "90px"
+      }
+    },
+    {
+      "id": "left-compact-1",
+      "size": "small",
+      "position": "left",
+      "price": 79,
+      "stripePriceId": "price_left_compact_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "90px"
+      }
+    },
+    {
+      "id": "bottom-banner-1",
+      "size": "banner",
+      "position": "bottom",
+      "price": 799,
+      "stripePriceId": "price_bottom_banner_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "100px"
+      }
+    },
+    {
+      "id": "bottom-banner-2",
+      "size": "banner",
+      "position": "bottom",
+      "price": 599,
+      "stripePriceId": "price_bottom_banner_2",
+      "dimensions": {
+        "width": "100%",
+        "height": "90px"
+      }
+    },
+    {
+      "id": "left-micro-1",
+      "size": "small",
+      "position": "left",
+      "price": 69,
+      "stripePriceId": "price_left_micro_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "80px"
+      }
+    },
+    {
+      "id": "right-micro-1",
+      "size": "small",
+      "position": "right",
+      "price": 49,
+      "stripePriceId": "price_right_micro_1",
+      "dimensions": {
+        "width": "100%",
+        "height": "80px"
+      }
+    }
+  ],
+  "activeAds": [
+    {
+      "id": "ad-001",
+      "spotId": "right-xl-1",
+      "startup": {
+        "name": "Uara AI",
+        "logo": "https://uara.ai/favicon.ico",
+        "website": "https://uara.ai",
+        "description": "Build AI agents that actually work. Ship production-ready AI in days, not months.",
+        "tagline": "Ship AI faster"
+      },
+      "expiresAt": "2025-12-31T23:59:59.000Z",
+      "isActive": true
+    },
+    {
+      "id": "ad-002",
+      "spotId": "top-hero-banner",
+      "startup": {
+        "name": "TrustMyMRR",
+        "logo": "/logo.png",
+        "website": "https://trustmymrr.com",
+        "description": "Transparent startup revenue tracking with verified Stripe data. See real MRR numbers.",
+        "tagline": "Transparent revenue tracking"
+      },
+      "expiresAt": "2025-12-31T23:59:59.000Z",
+      "isActive": true
+    }
+  ]
+}
