@@ -107,5 +107,24 @@ export async function generateMetadata({ params }: StartupPageProps) {
   return {
     title: `${startup.name} - Metrics Dashboard`,
     description: startup.description || `View metrics for ${startup.name}`,
+    openGraph: {
+      title: `${startup.name} - Metrics Dashboard`,
+      description: startup.description || `View metrics for ${startup.name}`,
+      type: "website",
+      images: [
+        {
+          url: `/api/og/startup/${slug}`,
+          width: 1200,
+          height: 630,
+          alt: startup.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${startup.name} - Metrics Dashboard`,
+      description: startup.description || `View metrics for ${startup.name}`,
+      images: [`/api/og/startup/${slug}`],
+    },
   };
 }

@@ -21,6 +21,27 @@ export const metadata: Metadata = {
   title: "Trust My MRR - Transparent Startup Revenue",
   description:
     "Track and compare startup revenue metrics with transparent Stripe data",
+  openGraph: {
+    title: "Trust My MRR - Transparent Startup Revenue",
+    description:
+      "Track and compare startup revenue metrics with transparent Stripe data",
+    type: "website",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Trust My MRR",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trust My MRR - Transparent Startup Revenue",
+    description:
+      "Track and compare startup revenue metrics with transparent Stripe data",
+    images: ["/api/og"],
+  },
 };
 
 export default function RootLayout({

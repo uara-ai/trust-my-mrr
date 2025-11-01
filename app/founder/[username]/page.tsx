@@ -98,5 +98,32 @@ export async function generateMetadata({ params }: FounderPageProps) {
     description: `View all startups and metrics for ${
       founder.displayName || `@${founder.x_username}`
     }`,
+    openGraph: {
+      title: `${
+        founder.displayName || `@${founder.x_username}`
+      } - Founder Dashboard`,
+      description: `View all startups and metrics for ${
+        founder.displayName || `@${founder.x_username}`
+      }`,
+      type: "profile",
+      images: [
+        {
+          url: `/api/og/founder/${username}`,
+          width: 1200,
+          height: 630,
+          alt: founder.displayName || `@${founder.x_username}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${
+        founder.displayName || `@${founder.x_username}`
+      } - Founder Dashboard`,
+      description: `View all startups and metrics for ${
+        founder.displayName || `@${founder.x_username}`
+      }`,
+      images: [`/api/og/founder/${username}`],
+    },
   };
 }
