@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: "subscription",
+      allow_promotion_codes: true, // Enable discount/promo codes at checkout
       // Success URL: Stripe only supports {CHECKOUT_SESSION_ID} substitution
       // All other data (customer_id, subscription_id, etc.) must be fetched
       // using the session_id from Stripe API or webhook
