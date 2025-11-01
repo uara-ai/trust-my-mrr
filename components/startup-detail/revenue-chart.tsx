@@ -2,13 +2,7 @@
 
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { MinimalCard } from "@/components/minimal-card";
 import {
   ChartConfig,
   ChartContainer,
@@ -74,14 +68,16 @@ export function RevenueChart({
       : 0;
 
   return (
-    <Card className="pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+    <MinimalCard className="dark:bg-zinc-950 dark:border-zinc-800 p-0">
+      <div className="flex items-center gap-2 space-y-0 border-b border-gray-200 dark:border-zinc-800 py-4 px-4 sm:flex-row">
         <div className="grid flex-1 gap-1">
-          <CardTitle>Revenue & MRR Over Time</CardTitle>
-          <CardDescription>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-zinc-50">
+            Revenue & MRR Over Time
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-zinc-400">
             Total revenue: {formatCurrency(totalRevenue)} | Avg MRR:{" "}
             {formatCurrency(avgMRR)}
-          </CardDescription>
+          </p>
         </div>
         <Select value={timeRange} onValueChange={handleTimeRangeChange}>
           <SelectTrigger
@@ -105,8 +101,8 @@ export function RevenueChart({
             </SelectItem>
           </SelectContent>
         </Select>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      </div>
+      <div className="px-2 pt-4 pb-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
@@ -186,7 +182,7 @@ export function RevenueChart({
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </MinimalCard>
   );
 }

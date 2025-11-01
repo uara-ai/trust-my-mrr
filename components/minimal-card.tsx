@@ -20,7 +20,7 @@ export function MinimalCard({
   variant = "default",
 }: MinimalCardProps) {
   const baseClasses =
-    "bg-white border border-gray-200 rounded transition-all duration-200";
+    "bg-white border border-gray-200 rounded-sm transition-all duration-200";
 
   const variantClasses = {
     default: "p-4 hover:border-gray-300 hover:shadow-sm",

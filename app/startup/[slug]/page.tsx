@@ -4,6 +4,7 @@ import {
   getStartupRevenueData,
   getLast30DaysRevenue,
 } from "@/app/actions/startup-detail.actions";
+import { getStartupsWithMetrics } from "@/app/actions/startup.actions";
 import { StartupHeader } from "@/components/startup-detail/startup-header";
 import { StartupMetrics } from "@/components/startup-detail/startup-metrics";
 
@@ -51,11 +52,25 @@ export default async function StartupPage({ params }: StartupPageProps) {
       ? revenueDataResult.data.dataPoints
       : [];
 
+  // Calculate rank based on total revenue
+  const allStartups = await getStartupsWithMetrics();
+  const sortedByRevenue = allStartups
+    .filter((s) => s.metrics?.totalRevenue)
+    .sort(
+      (a, b) => (b.metrics?.totalRevenue || 0) - (a.metrics?.totalRevenue || 0)
+    );
+
+  const rank = sortedByRevenue.findIndex((s) => s.id === startup.id) + 1;
+  const totalStartups = sortedByRevenue.length;
+
   return (
     <div className="container mx-auto py-10 space-y-8">
       {/* Header with startup info */}
       <StartupHeader
         name={startup.name}
+        slug={slug}
+        rank={rank}
+        totalStartups={totalStartups}
         logo={startup.logo}
         website={startup.website}
         description={startup.description}
