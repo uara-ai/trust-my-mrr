@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Startup {
+  id          String    @id @default(cuid())
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  website     String?   @db.VarChar(500)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
+  founders    Founder[]
+
+  @@index([name])
+  @@index([createdAt(sort: Desc)])
+  @@map("startups")
+}
+
+model Founder {
+  id        String   @id @default(cuid())
+  x_username      String   @db.VarChar(255)
+  startupId String
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([startupId])
+  @@index([x_username])
+  @@index([startupId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@map("founders")
+}
