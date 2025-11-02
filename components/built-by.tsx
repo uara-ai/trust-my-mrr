@@ -1,6 +1,11 @@
-import { IconProgressDown } from "@tabler/icons-react";
+import {
+  IconBrandX,
+  IconChartBar,
+  IconProgressDown,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
+import { GithubStars } from "./github-stars";
 
 export function BuiltBy() {
   return (
@@ -27,6 +32,33 @@ export function BuiltBy() {
           </span>
         </Link>
       </p>
+      <div className="mt-2 flex items-center gap-2">
+        <Link
+          href="https://x.com/FedericoFan"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded bg-gray-100 hover:bg-gray-200 px-3 py-1 text-sm font-medium text-gray-800 transition"
+          title="Follow me on X"
+        >
+          <IconBrandX className="size-3" />
+          <span className="flex items-center gap-1 text-muted-foreground">
+            Follow me
+          </span>
+        </Link>
+        <GithubStars />
+        <Link
+          href="https://dashboard.openpanel.dev/share/overview/PVKzC6"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded bg-gray-100 hover:bg-gray-200 px-3 py-1 text-sm font-medium text-gray-800 transition"
+          title="Analytics"
+        >
+          <IconChartBar className="size-3" />
+          <span className="flex items-center gap-1 text-muted-foreground">
+            Analytics
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }
