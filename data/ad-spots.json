@@ -1,9 +1,9 @@
 {
   "dynamicPricing": {
     "enabled": true,
-    "startPrice": 99,
+    "startPrice": 49,
     "maxPrice": 1499,
-    "priceIncrement": 100,
+    "priceIncrement": 50,
     "singleStripePriceId": "price_dynamic_ad_spot"
   },
   "adSpots": [
