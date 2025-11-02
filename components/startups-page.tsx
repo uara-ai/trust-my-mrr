@@ -2,6 +2,7 @@ import { getStartupsWithMetrics } from "@/app/actions/startup.actions";
 import { StartupsDataTable } from "./startups-data-table";
 import { columns } from "./startups-table-columns";
 import { Lock } from "lucide-react";
+import { ProductHunt } from "./product-hunt";
 
 export async function StartupsPage() {
   const startups = await getStartupsWithMetrics();
@@ -10,7 +11,7 @@ export async function StartupsPage() {
     <div className="container mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-center text-center">
-        <div>
+        <div className="flex flex-col items-center gap-4">
           <h1 className="text-3xl font-bold tracking-tight">
             The open source database of verified revenues
           </h1>
@@ -21,6 +22,7 @@ export async function StartupsPage() {
               <span className="font-semibold">Stripe</span> API keys.
             </span>
           </p>
+          <ProductHunt />
         </div>
       </div>
 

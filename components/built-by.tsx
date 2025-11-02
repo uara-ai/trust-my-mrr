@@ -9,7 +9,7 @@ import { GithubStars } from "./github-stars";
 
 export function BuiltBy() {
   return (
-    <div className="flex flex-col items-center justify-center mt-12">
+    <div className="flex flex-col items-center justify-center mt-12 mb-12">
       <span className="text-xs text-muted-foreground flex items-center gap-1">
         <IconProgressDown className="size-3" />
         Data is updated hourly.
