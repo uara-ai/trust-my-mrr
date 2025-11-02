@@ -15,9 +15,12 @@ export async function StartupsPage() {
             Another database of verified startup revenues
           </h1>
           <p className="mt-2 text-xs flex items-center gap-1 justify-center text-muted-foreground">
-            <Lock className="size-3" />
-            All revenue is verified through <strong>Stripe</strong> API keys.
-            Data is updated hourly.
+            <Lock className="size-3 hidden sm:block" />
+            <span className="text-muted-foreground">
+              All revenue is verified through{" "}
+              <span className="font-semibold">Stripe</span> API keys. Data is
+              updated hourly.
+            </span>
           </p>
         </div>
       </div>

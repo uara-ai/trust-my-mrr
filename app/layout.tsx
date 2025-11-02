@@ -5,6 +5,8 @@ import { Header } from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarLeft } from "@/components/ads/sidebar-left";
 import { SidebarRight } from "@/components/ads/sidebar-right";
+import { MobileTopWrapper } from "@/components/ads/mobile-top-wrapper";
+import { MobileBottomWrapper } from "@/components/ads/mobile-bottom-wrapper";
 import { BuiltBy } from "@/components/built-by";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 
@@ -104,9 +106,13 @@ export default function RootLayout({
         <SidebarProvider>
           <SidebarLeft />
           <SidebarInset>
+            {/* Mobile Top Ads - Only visible on mobile */}
+            <MobileTopWrapper />
             <Header />
             <div className="px-4 py-0">{children}</div>
             <BuiltBy />
+            {/* Mobile Bottom Ads - Only visible on mobile */}
+            <MobileBottomWrapper />
           </SidebarInset>
           <SidebarRight />
         </SidebarProvider>
