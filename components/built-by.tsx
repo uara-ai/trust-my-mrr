@@ -1,9 +1,14 @@
+import { IconProgressDown } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export function BuiltBy() {
   return (
-    <div className="flex items-center justify-center mt-12">
+    <div className="flex flex-col items-center justify-center mt-12">
+      <span className="text-xs text-muted-foreground flex items-center gap-1">
+        <IconProgressDown className="size-3" />
+        Data is updated hourly.
+      </span>
       <p className="text-xs text-muted-foreground flex items-center gap-1">
         Built by{" "}
         <Link
