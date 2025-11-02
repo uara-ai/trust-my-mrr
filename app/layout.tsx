@@ -103,19 +103,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Fixed Mobile Top Ads - Only visible on mobile */}
+        <MobileTopWrapper />
+
         <SidebarProvider>
           <SidebarLeft />
-          <SidebarInset>
-            {/* Mobile Top Ads - Only visible on mobile */}
-            <MobileTopWrapper />
+          <SidebarInset className="pt-[52px] pb-[52px] md:pt-0 md:pb-0">
             <Header />
             <div className="px-4 py-0">{children}</div>
             <BuiltBy />
-            {/* Mobile Bottom Ads - Only visible on mobile */}
-            <MobileBottomWrapper />
           </SidebarInset>
           <SidebarRight />
         </SidebarProvider>
+
+        {/* Fixed Mobile Bottom Ads - Only visible on mobile */}
+        <MobileBottomWrapper />
         <OpenPanelComponent
           clientId={process.env.NEXT_PUBLIC_OPEN_PANEL_CLIENT_ID!}
           clientSecret={process.env.OPEN_PANEL_CLIENT_SECRET!}
