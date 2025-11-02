@@ -12,7 +12,7 @@ export async function StartupsPage() {
       <div className="flex items-center justify-center text-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Another database of verified startup revenues
+            The Open source database of verified startup revenues
           </h1>
           <p className="mt-2 text-xs flex items-center gap-1 justify-center text-muted-foreground">
             <Lock className="size-3 hidden sm:block" />
